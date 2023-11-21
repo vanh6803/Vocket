@@ -14,15 +14,16 @@ import {colors} from '../assets/Colors';
 import CricleButton from './CricleButton';
 import {globals} from '../styles/Global';
 
-export default function RenderImage() {
+export default function RenderImage({image, onClickClose, isFront}) {
   return (
     <View>
       <View className="rounded-[50px] overflow-hidden m-[2px]">
         <Image
-          source={{
-            uri: 'https://image-us.24h.com.vn/upload/3-2023/images/2023-09-12/q--2--1694514524-739-width641height960.jpg',
-          }}
+          source={{uri: `file://${image.path}`}}
           className="aspect-square"
+          style={{
+            transform: isFront ? [{rotate: '90deg'}] : [],
+          }}
         />
         <TextInput
           placeholder="add a message"
@@ -37,6 +38,7 @@ export default function RenderImage() {
         style={{marginTop: dimen.height * 0.05}}>
         <CricleButton
           icon={<IconOutline.XMarkIcon color={'white'} size={45} />}
+          onPress={onClickClose}
         />
         <CricleButton
           icon={

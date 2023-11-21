@@ -18,7 +18,7 @@ import {useNavigation} from '@react-navigation/native';
 import {colors} from '../assets/Colors';
 import PagerView from 'react-native-pager-view';
 import PageAction from '../components/PageAction';
-import PageImage from '../components/PageImage';
+import PageContents from '../components/PageContents';
 
 export default function Main() {
   const {hasPermission, requestPermission} = useCameraPermission();
@@ -58,7 +58,7 @@ export default function Main() {
   }, [hasPermission]);
 
   return (
-    <View className={`flex flex-1 bg-[${colors.bg_dark}]`}>
+    <View className={`flex flex-1`} style={{backgroundColor: colors.bg_dark}}>
       <StatusBar backgroundColor={colors.bg_dark} />
       <PagerView
         ref={pageRef}
@@ -73,8 +73,9 @@ export default function Main() {
           goToPage={() => {
             pageRef.current.setPage(1);
           }}
+          
         />
-        <PageImage
+        <PageContents
           key={2}
           goToPage={() => {
             pageRef.current.setPage(0);
