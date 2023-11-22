@@ -1,31 +1,32 @@
-import {View, Text, TouchableOpacity} from 'react-native';
+import {View, Text, TouchableOpacity, PermissionsAndroid} from 'react-native';
 import React, {useRef, useState} from 'react';
 import Header from './Header';
 import RenderImage from './RenderImage';
 import RenderCamera from './RenderCamera';
-import {
-  useCameraPermission,
-  useCameraDevice,
-  Camera,
-  ImageManipulator,
-} from 'react-native-vision-camera';
 import * as IconOutline from 'react-native-heroicons/outline';
 import * as IconSolid from 'react-native-heroicons/solid';
 import {globals} from '../styles/Global';
+import {CameraRoll} from '@react-native-camera-roll/camera-roll';
 
 export default function PageAction({goToPage}) {
   const camera = useRef();
   const [image, setImage] = useState();
 
-  const [isFrontCamera, setIsFrontCamera] = useState(true); // Trạng thái để theo dõi xem camera nên là camera sau hay không
-  const device = useCameraDevice(isFrontCamera ? 'front' : 'back');
+  const [isFrontCamera, setIsFrontCamera] = useState(true);
+  const [flash, setFlash] = useState(false);
 
   const handleTakePhoto = async () => {
-    const photo = await camera.current.takePhoto();
+    const photo = await camera.current.takePhoto({
+      enableShutterSound: true,
+      flash: flash ? 'on' : 'off',
+    });
     setImage(photo);
   };
   const toggleCamera = () => {
     setIsFrontCamera(prevIsFrontCamera => !prevIsFrontCamera);
+  };
+  const toggleFlash = () => {
+    setFlash(prevFlash => !prevFlash);
   };
   return (
     <View className="flex-1">
@@ -41,6 +42,8 @@ export default function PageAction({goToPage}) {
           cameraRef={camera}
           toggleCamera={toggleCamera}
           isFront={isFrontCamera}
+          flash={flash}
+          toggleFlash={toggleFlash}
         />
       ) : (
         <RenderImage
@@ -49,6 +52,7 @@ export default function PageAction({goToPage}) {
             setImage(null);
           }}
           isFront={isFrontCamera}
+          toggleSaveImage={savePhotoToCameraRoll}
         />
       )}
       {/* footer */}

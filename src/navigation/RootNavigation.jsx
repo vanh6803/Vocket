@@ -5,6 +5,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Login from '../screens/Login';
 import Main from '../screens/Main';
 import {colors} from '../assets/Colors';
+import Register from '../screens/Register';
 
 const Stack = createNativeStackNavigator();
 
@@ -16,7 +17,8 @@ export default function RootNavigation() {
           headerShown: false,
           navigationBarColor: colors.bg_dark,
         }}>
-        {/* <Stack.Screen name="Login" component={Login} /> */}
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="Main" component={Main} />
       </Stack.Navigator>
     </NavigationContainer>

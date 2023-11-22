@@ -27,35 +27,47 @@ export default function Main() {
   const pageRef = useRef();
 
   useEffect(() => {
-    const requestCameraPermission = async () => {
-      if (Platform.OS === 'android') {
-        try {
-          const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.CAMERA,
-            {
-              title: 'Camera Permission',
-              message: 'This app needs access to your camera.',
-              buttonPositive: 'OK',
-            },
-          );
-          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            // Quyền truy cập camera đã được cấp
-            console.log('Camera permission granted');
-          } else {
-            // Quyền truy cập camera bị từ chối
-            console.log('Camera permission denied');
-          }
-        } catch (err) {
-          console.warn(err);
-        }
-      }
-    };
-
-    // Kiểm tra và yêu cầu quyền truy cập camera nếu cần
     if (!hasPermission) {
       requestCameraPermission();
     }
   }, [hasPermission]);
+
+  const requestCameraPermission = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        const cameraGranted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.CAMERA,
+          {
+            title: 'Camera Permission',
+            message: 'This app needs access to your camera.',
+            buttonPositive: 'OK',
+          },
+        );
+
+        const storageGranted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          {
+            title: 'Storage Permission',
+            message: 'This app needs access to your storage.',
+            buttonPositive: 'OK',
+          },
+        );
+
+        if (
+          cameraGranted === PermissionsAndroid.RESULTS.GRANTED &&
+          storageGranted === PermissionsAndroid.RESULTS.GRANTED
+        ) {
+          // Both camera and storage permissions are granted
+          console.log('Camera and storage permissions granted');
+        } else {
+          // Either camera or storage permission is denied
+          console.log('Camera or storage permission denied');
+        }
+      } catch (err) {
+        console.warn(err);
+      }
+    }
+  };
 
   return (
     <View className={`flex flex-1`} style={{backgroundColor: colors.bg_dark}}>
@@ -73,7 +85,6 @@ export default function Main() {
           goToPage={() => {
             pageRef.current.setPage(1);
           }}
-          
         />
         <PageContents
           key={2}

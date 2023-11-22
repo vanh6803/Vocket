@@ -1,5 +1,5 @@
-import {View, Text, Image} from 'react-native';
-import React, { useState } from 'react';
+import {View, Text, Image, TouchableOpacity, Pressable} from 'react-native';
+import React, {useCallback, useMemo, useRef, useState} from 'react';
 import Header from './Header';
 import * as IconOutline from 'react-native-heroicons/outline';
 import * as IconSolid from 'react-native-heroicons/solid';
@@ -7,17 +7,26 @@ import {dimen} from '../constants';
 import {colors} from '../assets/Colors';
 import CricleButton from './CricleButton';
 import ImagesConent from './ImagesConent';
+import BottomSheet from '@gorhom/bottom-sheet';
 
 export default function PageContents({goToPage}) {
+  const bottomSheetRef = useRef(null);
+  const snapPoints = useMemo(() => ['20%'], []);
+
+  const handleCloseBottomSheet = () => {
+    bottomSheetRef.current.close();
+  };
   return (
-    <View style={{height: dimen.height}}>
+    <Pressable style={{height: dimen.height}} onPress={handleCloseBottomSheet}>
       <Header
         iconLeft={<IconOutline.ChevronUpIcon color={'white'} size={35} />}
         iconRight={
           <IconOutline.EllipsisHorizontalCircleIcon color={'white'} size={35} />
         }
         onClickLeft={goToPage}
-        oncClickRight={()=>{}}//gọi bottom sheet dialog
+        oncClickRight={() => {
+          bottomSheetRef.current.expand();
+        }} //gọi bottom sheet dialog
       />
       <ImagesConent />
       {/* footer */}
@@ -57,7 +66,33 @@ export default function PageContents({goToPage}) {
         </View>
         <IconOutline.ShareIcon color={'white'} size={35} />
       </View>
-    </View>
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={-1 }
+        snapPoints={snapPoints}
+        enablePanDownToClose
+        backgroundStyle={{backgroundColor: colors.bg_4C}}
+        handleIndicatorStyle={{
+          backgroundColor: 'white',
+        }}>
+        <View className="flex-1">
+          <TouchableOpacity className="flex-1 justify-center items-center">
+            <Text className="text-lg text-red-500 font-bold">Delete Photo</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity className="flex-1 justify-center items-center border-t border-black">
+            <Text className="text-lg text-white  font-bold">
+              Download Photo
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            className="flex-1 justify-center items-center border-t border-black"
+            onPress={handleCloseBottomSheet}>
+            <Text className="text-lg text-white font-bold">Cancel</Text>
+          </TouchableOpacity>
+        </View>
+      </BottomSheet>
+    </Pressable>
   );
 }
-

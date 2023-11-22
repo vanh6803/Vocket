@@ -14,7 +14,12 @@ import {colors} from '../assets/Colors';
 import CricleButton from './CricleButton';
 import {globals} from '../styles/Global';
 
-export default function RenderImage({image, onClickClose, isFront}) {
+export default function RenderImage({
+  image,
+  onClickClose,
+  isFront,
+  toggleSaveImage,
+}) {
   return (
     <View>
       <View className="rounded-[50px] overflow-hidden m-[2px]">
@@ -51,6 +56,7 @@ export default function RenderImage({image, onClickClose, isFront}) {
           styleButton={[globals.circleButton, styles.styleButtonSend]}
         />
         <CricleButton
+          onPress={toggleSaveImage}
           icon={<IconOutline.ArrowDownTrayIcon color={'white'} size={45} />}
         />
       </View>

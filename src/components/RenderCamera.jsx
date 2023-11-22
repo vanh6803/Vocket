@@ -18,6 +18,8 @@ export default function RenderCamera({
   cameraRef,
   toggleCamera,
   isFront,
+  flash,
+  toggleFlash,
 }) {
   const device = useCameraDevice(isFront ? 'front' : 'back'); // Chọn camera dựa trên trạng thái
 
@@ -41,7 +43,14 @@ export default function RenderCamera({
         className="flex flex-row justify-around items-center"
         style={{marginTop: dimen.height * 0.05}}>
         <CricleButton
-          icon={<IconOutline.BoltIcon color={'white'} size={45} />}
+          icon={
+            flash ? (
+              <IconSolid.BoltIcon color={'white'} size={45} />
+            ) : (
+              <IconOutline.BoltIcon color={'white'} size={45} />
+            )
+          }
+          onPress={toggleFlash}
         />
         <TouchableOpacity
           className="rounded-full border-yellow-500 border-2 p-1"
