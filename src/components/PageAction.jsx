@@ -1,4 +1,4 @@
-import {View, Text, TouchableOpacity, PermissionsAndroid} from 'react-native';
+import {View, Text, TouchableOpacity} from 'react-native';
 import React, {useRef, useState} from 'react';
 import Header from './Header';
 import RenderImage from './RenderImage';
@@ -8,7 +8,7 @@ import * as IconSolid from 'react-native-heroicons/solid';
 import {globals} from '../styles/Global';
 import {CameraRoll} from '@react-native-camera-roll/camera-roll';
 
-export default function PageAction({goToPage}) {
+export default function PageAction({goToPage, nextChat}) {
   const camera = useRef();
   const [image, setImage] = useState();
 
@@ -28,13 +28,33 @@ export default function PageAction({goToPage}) {
   const toggleFlash = () => {
     setFlash(prevFlash => !prevFlash);
   };
+
+  const handleSavePhoto = async () => {
+    if (image) {
+      try {
+        const saved = await CameraRoll.save(image.path);
+        if (saved) {
+          console.log('Photo saved successfully!');
+          // You can add any additional logic or UI update here after saving the photo.
+        } else {
+          console.error('Failed to save photo.');
+        }
+      } catch (error) {
+        console.error('Error saving photo:', error);
+      }
+    }
+  };
+
   return (
     <View className="flex-1">
       <Header
-        iconLeft={<IconSolid.UsersIcon color={'white'} size={30} />}
-        iconRight={<IconSolid.UserCircleIcon color={'white'} size={30} />}
+        iconLeft={<IconSolid.UserCircleIcon color={'white'} size={30} />}
+        iconRight={
+          <IconSolid.ChatBubbleOvalLeftIcon color={'white'} size={30} />
+        }
         styleButtonLeft={[globals.circleButton]}
         styleButtonRight={[globals.circleButton]}
+        oncClickRight={nextChat}
       />
       {!image ? (
         <RenderCamera
@@ -52,7 +72,7 @@ export default function PageAction({goToPage}) {
             setImage(null);
           }}
           isFront={isFrontCamera}
-          toggleSaveImage={savePhotoToCameraRoll}
+          toggleSaveImage={handleSavePhoto}
         />
       )}
       {/* footer */}

@@ -94,6 +94,7 @@ export default function Login() {
           </View>
           {/* login */}
           <TouchableOpacity
+            onPress={() => nextScreen('Main')}
             className="justify-center items-center rounded-3xl"
             style={{
               backgroundColor: colors.primary,
