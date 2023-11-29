@@ -26,9 +26,9 @@ export default function RenderImage({
         <Image
           source={{uri: `file://${image.path}`}}
           className="aspect-square"
-          style={{
-            transform: isFront ? [{rotate: '90deg'}] : [],
-          }}
+          // style={{
+          //   transform: isFront ? [{rotate: '90deg'}] : [],
+          // }}
         />
         <TextInput
           placeholder="add a message"

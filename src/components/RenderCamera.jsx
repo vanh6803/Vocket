@@ -1,16 +1,15 @@
 import {View, TouchableOpacity} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {
-  useCameraPermission,
   useCameraDevice,
   Camera,
+  useCameraFormat,
 } from 'react-native-vision-camera';
 import * as IconOutline from 'react-native-heroicons/outline';
 import * as IconSolid from 'react-native-heroicons/solid';
 import CricleButton from './CricleButton';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {dimen} from '../constants/index';
-import {colors} from '../assets/Colors';
 import {useAppState} from '@react-native-community/hooks';
 
 export default function RenderCamera({
@@ -26,6 +25,9 @@ export default function RenderCamera({
   const isFocused = useIsFocused();
   const appState = useAppState();
   const isActive = isFocused && appState === 'active';
+  const format = useCameraFormat(device, [
+    {photoResolution: {width: dimen.width, height: dimen.width}},
+  ]);
 
   return (
     <View>
@@ -37,6 +39,7 @@ export default function RenderCamera({
           isActive={isActive}
           photo
           enableZoomGesture
+          orientation="portrait"
         />
       </View>
       <View

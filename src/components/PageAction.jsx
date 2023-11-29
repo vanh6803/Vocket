@@ -1,4 +1,4 @@
-import {View, Text, TouchableOpacity} from 'react-native';
+import {View, Text, TouchableOpacity, Image} from 'react-native';
 import React, {useRef, useState} from 'react';
 import Header from './Header';
 import RenderImage from './RenderImage';
@@ -7,6 +7,8 @@ import * as IconOutline from 'react-native-heroicons/outline';
 import * as IconSolid from 'react-native-heroicons/solid';
 import {globals} from '../styles/Global';
 import {CameraRoll} from '@react-native-camera-roll/camera-roll';
+import RNPhotoManipulator from 'react-native-image-manipulator';
+import {dimen} from '../constants';
 
 export default function PageAction({goToPage, nextChat}) {
   const camera = useRef();
@@ -19,9 +21,35 @@ export default function PageAction({goToPage, nextChat}) {
     const photo = await camera.current.takePhoto({
       enableShutterSound: true,
       flash: flash ? 'on' : 'off',
+      enableAutoRedEyeReduction: true,
+      enableAutoStabilization: true,
+      enableAutoDistortionCorrection: true,
     });
-    setImage(photo);
+    const rotatedImage = isFrontCamera ? await rotateImage(photo) : photo;
+    console.log(rotatedImage);
+    setImage(rotatedImage);
   };
+
+  const rotateImage = async photo => {
+    try {
+      const rotateImage = await RNPhotoManipulator.manipulate(
+        `file://${photo.path}`,
+        [{rotate: 90}],
+        {
+          compress: 1,
+        },
+      );
+      console.log(rotateImage);
+      return {
+        path: rotateImage.uri,
+        orientation: 'portrait',
+      };
+    } catch (error) {
+      console.error('Error rotating image:', error);
+      throw error;
+    }
+  };
+
   const toggleCamera = () => {
     setIsFrontCamera(prevIsFrontCamera => !prevIsFrontCamera);
   };
