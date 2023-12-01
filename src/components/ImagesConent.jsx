@@ -1,59 +1,40 @@
 import {View, Text, Image} from 'react-native';
 import React, {useRef} from 'react';
-import {dimen} from '../constants';
+import {BASE_URL, dimen} from '../constants';
 import {colors} from '../assets/Colors';
 import PagerView from 'react-native-pager-view';
-
-const data = [
-  {
-    id: 1,
-    image:
-      'https://image-us.24h.com.vn/upload/3-2023/images/2023-09-12/q--2--1694514524-739-width641height960.jpg',
-    content: 'haha',
-    user: 'vanh',
-  },
-  {
-    id: 2,
-    image:
-      'https://image-us.24h.com.vn/upload/3-2023/images/2023-09-12/q--2--1694514524-739-width641height960.jpg',
-    content: 'haha',
-    user: 'vanh1',
-  },
-  {
-    id: 3,
-    image:
-      'https://image-us.24h.com.vn/upload/3-2023/images/2023-09-12/q--2--1694514524-739-width641height960.jpg',
-    content: 'haha',
-    user: 'vanh2',
-  },
-];
+import {useSelector} from 'react-redux';
 
 export default function ImagesConent() {
   const pagerRef = useRef();
+
+  const data = useSelector(state => state.postReducer.data);
+
   return (
     <View className="flex-1  justify-center items-center">
       <PagerView
         ref={pagerRef}
         orientation={'vertical'}
         style={{width: dimen.width, height: '100%'}}>
-        {data.map((data, index) => {
+        {data?.result.map((data, index) => {
           return (
-            <View key={data.id} className="flex-1 justify-center items-center">
+            <View key={index} className="flex-1 justify-center items-center">
               <View
                 className="rounded-[50px] overflow-hidden"
                 style={{width: dimen.width, height: dimen.width}}>
                 <Image
                   source={{
-                    uri: data.image,
+                    uri: `${BASE_URL}${data.image}`,
                   }}
                   className="aspect-square"
                 />
-                <Text
-                  className="absolute text-white bottom-3 rounded-3xl self-center text-base p-1.5 px-3"
-                  style={{backgroundColor: 'rgba(0, 0, 0,0.5)'}}>
-                  {' '}
-                  {data.content}{' '}
-                </Text>
+                {data.content ? (
+                  <Text
+                    className="absolute text-white bottom-3 rounded-3xl self-center text-base p-1.5 px-3"
+                    style={{backgroundColor: 'rgba(0, 0, 0,0.5)'}}>
+                    {data.content}
+                  </Text>
+                ) : null}
               </View>
               <View
                 className="p-2 px-4 rounded-3xl justify-center items-center"

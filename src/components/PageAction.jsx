@@ -8,7 +8,9 @@ import * as IconSolid from 'react-native-heroicons/solid';
 import {globals} from '../styles/Global';
 import {CameraRoll} from '@react-native-camera-roll/camera-roll';
 import RNPhotoManipulator from 'react-native-image-manipulator';
-import {dimen} from '../constants';
+import {BASE_URL, dimen} from '../constants';
+import axios from 'axios';
+import Snackbar from 'react-native-snackbar';
 
 export default function PageAction({goToPage, nextChat}) {
   const camera = useRef();
@@ -39,11 +41,7 @@ export default function PageAction({goToPage, nextChat}) {
           compress: 1,
         },
       );
-      console.log(rotateImage);
-      return {
-        path: rotateImage.uri,
-        orientation: 'portrait',
-      };
+      return rotateImage;
     } catch (error) {
       console.error('Error rotating image:', error);
       throw error;
@@ -60,15 +58,30 @@ export default function PageAction({goToPage, nextChat}) {
   const handleSavePhoto = async () => {
     if (image) {
       try {
-        const saved = await CameraRoll.save(image.path);
+        const saved = await CameraRoll.save(
+          isFrontCamera ? image.uri : image.path,
+        );
         if (saved) {
           console.log('Photo saved successfully!');
-          // You can add any additional logic or UI update here after saving the photo.
+          Snackbar.show({
+            text: 'save photo successfully',
+            duration: Snackbar.LENGTH_SHORT,
+          });
         } else {
           console.error('Failed to save photo.');
+          Snackbar.show({
+            text: 'save photo failed',
+            duration: Snackbar.LENGTH_SHORT,
+            backgroundColor: 'red',
+          });
         }
       } catch (error) {
         console.error('Error saving photo:', error);
+        Snackbar.show({
+          text: 'save photo failed',
+          duration: Snackbar.LENGTH_SHORT,
+          backgroundColor: 'red',
+        });
       }
     }
   };

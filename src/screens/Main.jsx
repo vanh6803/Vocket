@@ -5,11 +5,18 @@ import {colors} from '../assets/Colors';
 import PagerView from 'react-native-pager-view';
 import PageAction from '../components/PageAction';
 import PageContents from '../components/PageContents';
+import {useDispatch, useSelector} from 'react-redux';
+import {fetchPostRequest} from '../redux/action/Post';
 
 export default function Main() {
   const navigation = useNavigation();
   const [currentPage, setCurrentPage] = useState(0);
   const pageRef = useRef();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchPostRequest());
+  }, [dispatch]);
 
   return (
     <View className={`flex flex-1`} style={{backgroundColor: colors.bg_dark}}>

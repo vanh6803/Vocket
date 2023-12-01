@@ -6,13 +6,19 @@ import {
   StyleSheet,
   TextInput,
 } from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import * as IconOutline from 'react-native-heroicons/outline';
 import * as IconSolid from 'react-native-heroicons/solid';
 import {dimen} from '../constants/index';
 import {colors} from '../assets/Colors';
 import CricleButton from './CricleButton';
 import {globals} from '../styles/Global';
+import axios from 'axios';
+import {BASE_URL} from '../constants/index';
+import {useDispatch, useSelector} from 'react-redux';
+import {fetchPostRequest} from '../redux/action/Post';
+import Toast from './Toast';
+import Snackbar from 'react-native-snackbar';
 
 export default function RenderImage({
   image,
@@ -20,11 +26,51 @@ export default function RenderImage({
   isFront,
   toggleSaveImage,
 }) {
+  const [content, setContent] = useState();
+  const dispatch = useDispatch();
+
+  const uri = isFront ? image.uri : `file://${image.path}`;
+  const sendPost = () => {
+    const formData = new FormData();
+    formData.append('image', {
+      uri: uri,
+      type: uri.endsWith('.png') ? 'image/png' : 'image/jpeg',
+      name: 'image.' + (uri.endsWith('.png') ? 'png' : 'jpg'),
+    });
+    if (content) {
+      formData.append('content', content);
+    }
+    console.log(formData);
+    axios
+      .post(`${BASE_URL}api/posts`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      .then(response => {
+        console.log(response.data);
+        dispatch(fetchPostRequest());
+        onClickClose();
+        Snackbar.show({
+          text: 'created posts successfully',
+          duration: Snackbar.LENGTH_SHORT,
+        });
+      })
+      .catch(error => {
+        console.error(error.message);
+        Snackbar.show({
+          text: 'created photo failed',
+          duration: Snackbar.LENGTH_SHORT,
+          backgroundColor: 'red',
+        });
+      });
+  };
+
   return (
     <View>
       <View className="rounded-[50px] overflow-hidden m-[2px]">
         <Image
-          source={{uri: `file://${image.path}`}}
+          source={{uri: uri}}
           className="aspect-square"
           // style={{
           //   transform: isFront ? [{rotate: '90deg'}] : [],
@@ -32,9 +78,14 @@ export default function RenderImage({
         />
         <TextInput
           placeholder="add a message"
-          className="text-white absolute bottom-3 self-center rounded-3xl px-3 text-[12px] font-semibold max-w-[70%]"
+          numberOfLines={1}
+          multiline={false}
+          className="text-center text-white absolute bottom-3 self-center rounded-3xl px-3 text-[12px] font-semibold max-w-[70%]"
           placeholderTextColor={'white'}
           style={{backgroundColor: 'rgba(0, 0, 0,0.5)'}}
+          onChangeText={text => {
+            setContent(text);
+          }}
         />
       </View>
 
@@ -54,6 +105,7 @@ export default function RenderImage({
             />
           }
           styleButton={[globals.circleButton, styles.styleButtonSend]}
+          onPress={sendPost}
         />
         <CricleButton
           onPress={toggleSaveImage}
