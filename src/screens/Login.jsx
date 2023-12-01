@@ -20,6 +20,8 @@ import {useNavigation} from '@react-navigation/native';
 export default function Login() {
   const navigation = useNavigation();
   const [check, setCheck] = useState(false);
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState();
 
   const handleCheckBox = () => {
     setCheck(!check);

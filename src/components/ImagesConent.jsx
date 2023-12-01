@@ -5,10 +5,12 @@ import {colors} from '../assets/Colors';
 import PagerView from 'react-native-pager-view';
 import {useSelector} from 'react-redux';
 
-export default function ImagesConent() {
+export default function ImagesConent({position}) {
   const pagerRef = useRef();
 
   const data = useSelector(state => state.postReducer.data);
+
+  pagerRef.current.setPage(position);
 
   return (
     <View className="flex-1  justify-center items-center">

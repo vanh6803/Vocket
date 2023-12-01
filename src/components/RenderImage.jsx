@@ -52,14 +52,14 @@ export default function RenderImage({
         dispatch(fetchPostRequest());
         onClickClose();
         Snackbar.show({
-          text: 'created posts successfully',
+          text: 'created new post successfully',
           duration: Snackbar.LENGTH_SHORT,
         });
       })
       .catch(error => {
         console.error(error.message);
         Snackbar.show({
-          text: 'created photo failed',
+          text: 'created new post failed',
           duration: Snackbar.LENGTH_SHORT,
           backgroundColor: 'red',
         });
