@@ -1,23 +1,24 @@
-import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  Pressable,
-  FlatList,
-} from 'react-native';
-import React, {useCallback, useMemo, useRef, useState} from 'react';
+import {View, Text, Image, Pressable} from 'react-native';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import Header from './Header';
 import * as IconOutline from 'react-native-heroicons/outline';
 import * as IconSolid from 'react-native-heroicons/solid';
 import {BASE_URL, dimen} from '../constants';
 import {colors} from '../assets/Colors';
 import CricleButton from './CricleButton';
-import ImagesConent from './ImagesConent';
 import BottomSheet from '@gorhom/bottom-sheet';
 import {useSelector} from 'react-redux';
+import PagerView from 'react-native-pager-view';
+import BottomSheetListPosts from './BottomSheetListPosts';
+import BottomSheetShowMoreOption from './BottomSheetShowMoreOption';
+import ConfirmDialog from './ConfirmDialog';
 
 export default function PageContents({goToPage}) {
+  const pagerRef = useRef();
+  const [itemSelected, setItemSelected] = useState();
+  const [indexSelected, setIndexSelected] = useState(0);
+  const [isShowConfirmDialog, setIsShowConfirmDialog] = useState(false);
+
   const bottomSheetShowMoreOptionRef = useRef(null);
   const snapPointsShowMore = useMemo(() => ['20%'], []);
 
@@ -26,21 +27,44 @@ export default function PageContents({goToPage}) {
 
   const data = useSelector(state => state.postReducer.data);
 
-  const [indexSelected, setIndexSelected] = useState(0);
+  useEffect(() => {
+    // Check if the pagerRef has been initialized
+    if (pagerRef.current) {
+      // Set the page based on the position prop
+      pagerRef.current.setPage(indexSelected);
+    }
+  }, [indexSelected]);
 
+  const onPageSelected = event => {
+    const selectedIndex = event.nativeEvent.position;
+    setItemSelected(data?.result[selectedIndex]);
+  };
+
+  const ConfirmDeletePhoto = () => {
+    console.log(itemSelected);
+    // show confirm dialog
+    setIsShowConfirmDialog(true);
+    handleCloseBottomSheet();
+  };
+
+  const handleDeletePhoto = () => {}
+
+  // close bottom sheet
   const handleCloseBottomSheet = () => {
     bottomSheetShowMoreOptionRef.current.close();
     bottomSheetListPosts.current.close();
   };
 
+  //select item in list
   const handleItemList = useCallback(index => {
     bottomSheetListPosts.current.close();
-    console.log(index);
+    console.log('index selected in list: ', index);
     setIndexSelected(index);
   });
 
   return (
     <Pressable style={{height: dimen.height}} onPress={handleCloseBottomSheet}>
+      {/* TODO: header */}
       <Header
         iconLeft={<IconOutline.ChevronUpIcon color={'white'} size={35} />}
         iconRight={
@@ -51,8 +75,49 @@ export default function PageContents({goToPage}) {
           bottomSheetShowMoreOptionRef.current.expand();
         }} //gọi bottom sheet dialog
       />
-      <ImagesConent position={indexSelected} />
-      {/* footer */}
+      {/* TODO: body content */}
+      <View className="flex-1  justify-center items-center">
+        <PagerView
+          ref={pagerRef}
+          orientation={'vertical'}
+          onPageSelected={onPageSelected}
+          style={{width: dimen.width, height: '100%'}}>
+          {data?.result.map((data, index) => {
+            return (
+              <View key={index} className="flex-1 justify-center items-center">
+                <View
+                  className="rounded-[50px] overflow-hidden"
+                  style={{width: dimen.width, height: dimen.width}}>
+                  <Image
+                    source={{
+                      uri: `${BASE_URL}${data.image}`,
+                    }}
+                    className="aspect-square"
+                  />
+                  {data.content ? (
+                    <Text
+                      className="absolute text-white bottom-3 rounded-3xl self-center text-base p-1.5 px-3"
+                      style={{backgroundColor: 'rgba(0, 0, 0,0.5)'}}>
+                      {data.content}
+                    </Text>
+                  ) : null}
+                </View>
+                <View
+                  className="p-2 px-4 rounded-3xl justify-center items-center"
+                  style={{
+                    marginTop: dimen.height * 0.05,
+                    backgroundColor: colors.bg_optacity,
+                  }}>
+                  <Text className="text-white text-base font-semibold">
+                    {data.user}
+                  </Text>
+                </View>
+              </View>
+            );
+          })}
+        </PagerView>
+      </View>
+      {/*TODO: footer */}
       <View
         className="flex-row items-center justify-between"
         style={{
@@ -95,6 +160,7 @@ export default function PageContents({goToPage}) {
         </View>
         <IconOutline.ShareIcon color={'white'} size={35} />
       </View>
+      {/* TODO: bottom sheet show all list product */}
       <BottomSheet
         ref={bottomSheetListPosts}
         index={-1}
@@ -106,6 +172,8 @@ export default function PageContents({goToPage}) {
         }}>
         <BottomSheetListPosts data={data} onClickItem={handleItemList} />
       </BottomSheet>
+
+      {/* TODO: bottom sheet show action */}
       <BottomSheet
         ref={bottomSheetShowMoreOptionRef}
         index={-1}
@@ -117,53 +185,16 @@ export default function PageContents({goToPage}) {
         }}>
         <BottomSheetShowMoreOption
           onCloseBottomSheet={handleCloseBottomSheet}
+          DeletePhoto={ConfirmDeletePhoto}
         />
       </BottomSheet>
+      <ConfirmDialog
+        visible={isShowConfirmDialog}
+        onClickCancel={() => {
+          setIsShowConfirmDialog(false);
+        }}
+        onClickDelete={handleDeletePhoto}
+      />
     </Pressable>
   );
 }
-
-const BottomSheetListPosts = ({data, onClickItem}) => {
-  return (
-    <View className="flex-1">
-      <FlatList
-        data={data?.result}
-        keyExtractor={data => data._id}
-        numColumns={3}
-        style={{paddingHorizontal: 2}}
-        renderItem={({item, index}) => {
-          return (
-            <TouchableOpacity
-              onPress={() => onClickItem(index)}
-              className="flex-1 m-[2px] max-w-[32%]">
-              <Image
-                source={{uri: `${BASE_URL}${item.image}`}}
-                className="aspect-square object-cover rounded-lg"
-              />
-            </TouchableOpacity>
-          );
-        }}
-      />
-    </View>
-  );
-};
-
-const BottomSheetShowMoreOption = ({onCloseBottomSheet}) => {
-  return (
-    <View className="flex-1">
-      <TouchableOpacity className="flex-1 justify-center items-center">
-        <Text className="text-lg text-red-500 font-bold">Delete Photo</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity className="flex-1 justify-center items-center border-t border-black">
-        <Text className="text-lg text-white  font-bold">Download Photo</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        className="flex-1 justify-center items-center border-t border-black"
-        onPress={onCloseBottomSheet}>
-        <Text className="text-lg text-white font-bold">Cancel</Text>
-      </TouchableOpacity>
-    </View>
-  );
-};

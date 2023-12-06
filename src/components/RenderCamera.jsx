@@ -22,12 +22,8 @@ export default function RenderCamera({
 }) {
   const device = useCameraDevice(isFront ? 'front' : 'back'); // Chọn camera dựa trên trạng thái
 
-  const isFocused = useIsFocused();
   const appState = useAppState();
-  const isActive = isFocused && appState === 'active';
-  const format = useCameraFormat(device, [
-    {photoResolution: {width: dimen.width, height: dimen.width}},
-  ]);
+  const isActive = appState === 'active';
 
   return (
     <View>
