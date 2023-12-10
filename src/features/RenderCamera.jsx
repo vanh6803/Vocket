@@ -1,16 +1,11 @@
 import {View, TouchableOpacity} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {
-  useCameraDevice,
-  Camera,
-  useCameraFormat,
-} from 'react-native-vision-camera';
+import React from 'react';
+import {useCameraDevice, Camera} from 'react-native-vision-camera';
 import * as IconOutline from 'react-native-heroicons/outline';
 import * as IconSolid from 'react-native-heroicons/solid';
-import CricleButton from './CricleButton';
-import {useIsFocused, useNavigation} from '@react-navigation/native';
-import {dimen} from '../constants/index';
 import {useAppState} from '@react-native-community/hooks';
+import {dimen} from '../constants/index';
+import CricleButton from '../components/CricleButton';
 
 export default function RenderCamera({
   takePhoto,
@@ -27,10 +22,22 @@ export default function RenderCamera({
 
   return (
     <View>
-      <View className="rounded-[50px] overflow-hidden m-[2px]">
+      <View
+        className="rounded-[50px] overflow-hidden m-[2px]"
+        // style={{
+        //   width: dimen.width,
+        //   height: dimen.width,
+        //   margin: 2,
+        //   borderRadius: 50,
+        //   overflow: 'hidden',
+        // }}
+      >
         <Camera
           ref={cameraRef}
-          className="aspect-square "
+          className="aspect-square"
+          // style={{
+          //   aspectRatio: 1,
+          // }}
           device={device}
           isActive={isActive}
           photo

@@ -11,13 +11,13 @@ import * as IconOutline from 'react-native-heroicons/outline';
 import * as IconSolid from 'react-native-heroicons/solid';
 import {dimen} from '../constants/index';
 import {colors} from '../assets/Colors';
-import CricleButton from './CricleButton';
+import CricleButton from '../components/CricleButton';
 import {globals} from '../styles/Global';
 import axios from 'axios';
 import {BASE_URL} from '../constants/index';
 import {useDispatch, useSelector} from 'react-redux';
 import {fetchPostRequest} from '../redux/action/Post';
-import Toast from './Toast';
+import Toast from '../components/Toast';
 import Snackbar from 'react-native-snackbar';
 
 export default function RenderImage({
@@ -69,13 +69,7 @@ export default function RenderImage({
   return (
     <View>
       <View className="rounded-[50px] overflow-hidden m-[2px]">
-        <Image
-          source={{uri: uri}}
-          className="aspect-square"
-          // style={{
-          //   transform: isFront ? [{rotate: '90deg'}] : [],
-          // }}
-        />
+        <Image source={{uri: uri}} className="aspect-square" />
         <TextInput
           placeholder="add a message"
           numberOfLines={1}

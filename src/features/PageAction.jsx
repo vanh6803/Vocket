@@ -1,16 +1,14 @@
 import {View, Text, TouchableOpacity, Image} from 'react-native';
 import React, {useRef, useState} from 'react';
-import Header from './Header';
-import RenderImage from './RenderImage';
-import RenderCamera from './RenderCamera';
 import * as IconOutline from 'react-native-heroicons/outline';
 import * as IconSolid from 'react-native-heroicons/solid';
-import {globals} from '../styles/Global';
 import {CameraRoll} from '@react-native-camera-roll/camera-roll';
 import RNPhotoManipulator from 'react-native-image-manipulator';
-import {BASE_URL, dimen} from '../constants';
-import axios from 'axios';
 import Snackbar from 'react-native-snackbar';
+import RenderCamera from './RenderCamera';
+import RenderImage from './RenderImage';
+import {globals} from '../styles/Global';
+import Header from '../components/Header';
 
 export default function PageAction({goToPage, nextChat}) {
   const camera = useRef();
@@ -51,6 +49,7 @@ export default function PageAction({goToPage, nextChat}) {
   const toggleCamera = () => {
     setIsFrontCamera(prevIsFrontCamera => !prevIsFrontCamera);
   };
+
   const toggleFlash = () => {
     setFlash(prevFlash => !prevFlash);
   };
@@ -119,6 +118,11 @@ export default function PageAction({goToPage, nextChat}) {
       {/* footer */}
       <TouchableOpacity
         className="flex-1 justify-center items-center"
+        // style={{
+        //   flex: 1,
+        //   justifyContent: 'center',
+        //   alignItems: 'center',
+        // }}
         onPress={goToPage}>
         <Text className="text-white text-xl font-semibold">History</Text>
         <IconOutline.ChevronDoubleDownIcon color={'white'} size={40} />

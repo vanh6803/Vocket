@@ -3,10 +3,10 @@ import React, {useEffect, useRef, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {colors} from '../assets/Colors';
 import PagerView from 'react-native-pager-view';
-import PageAction from '../components/PageAction';
-import PageContents from '../components/PageContents';
 import {useDispatch, useSelector} from 'react-redux';
 import {fetchPostRequest} from '../redux/action/Post';
+import PageAction from '../features/PageAction';
+import PageContents from '../features/PageContents';
 
 export default function Main() {
   const navigation = useNavigation();

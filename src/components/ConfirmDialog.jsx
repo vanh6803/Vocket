@@ -3,7 +3,11 @@ import {View, StyleSheet, Modal, Text, TouchableOpacity} from 'react-native';
 
 const ConfirmDialog = ({visible, onClickDelete, onClickCancel}) => {
   return (
-    <Modal visible={visible} animationType="fade" transparent={true}>
+    <Modal
+      visible={visible}
+      animationType="fade"
+      transparent={true}
+      onRequestClose={onClickCancel}>
       <View className="flex-1 justify-center items-center">
         <View className="bg-zinc-800 p-4 rounded-3xl">
           <Text className="text-white text-lg font-semibold mb-2">

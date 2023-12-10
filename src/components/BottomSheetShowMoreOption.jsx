@@ -1,7 +1,11 @@
 import React from 'react';
 import {View, StyleSheet, TouchableOpacity, Text} from 'react-native';
 
-const BottomSheetShowMoreOption = ({onCloseBottomSheet, DeletePhoto}) => {
+const BottomSheetShowMoreOption = ({
+  onCloseBottomSheet,
+  DeletePhoto,
+  savePhoto,
+}) => {
   return (
     <View className="flex-1">
       <TouchableOpacity
@@ -10,7 +14,9 @@ const BottomSheetShowMoreOption = ({onCloseBottomSheet, DeletePhoto}) => {
         <Text className="text-lg text-red-500 font-bold">Delete Photo</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity className="flex-1 justify-center items-center border-t border-black">
+      <TouchableOpacity
+        onPress={savePhoto}
+        className="flex-1 justify-center items-center border-t border-black">
         <Text className="text-lg text-white  font-bold">Download Photo</Text>
       </TouchableOpacity>
 

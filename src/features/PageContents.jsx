@@ -1,21 +1,25 @@
 import {View, Text, Image, Pressable} from 'react-native';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import Header from './Header';
+import Header from '../components/Header';
 import * as IconOutline from 'react-native-heroicons/outline';
 import * as IconSolid from 'react-native-heroicons/solid';
-import {BASE_URL, dimen} from '../constants';
+import {BASE_URL, dimen} from '../constants/index';
 import {colors} from '../assets/Colors';
-import CricleButton from './CricleButton';
+import CricleButton from '../components/CricleButton';
 import BottomSheet from '@gorhom/bottom-sheet';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import PagerView from 'react-native-pager-view';
-import BottomSheetListPosts from './BottomSheetListPosts';
-import BottomSheetShowMoreOption from './BottomSheetShowMoreOption';
-import ConfirmDialog from './ConfirmDialog';
+import BottomSheetListPosts from '../components/BottomSheetListPosts';
+import BottomSheetShowMoreOption from '../components/BottomSheetShowMoreOption';
+import ConfirmDialog from '../components/ConfirmDialog';
+import axios from 'axios';
+import {fetchPostRequest} from '../redux/action/Post';
+import Snackbar from 'react-native-snackbar';
+import FastImage from 'react-native-fast-image';
 
 export default function PageContents({goToPage}) {
   const pagerRef = useRef();
-  const [itemSelected, setItemSelected] = useState();
+  const [itemSelected, setItemSelected] = useState(null);
   const [indexSelected, setIndexSelected] = useState(0);
   const [isShowConfirmDialog, setIsShowConfirmDialog] = useState(false);
 
@@ -26,6 +30,7 @@ export default function PageContents({goToPage}) {
   const snapPointsListPosts = useMemo(() => ['97%'], []);
 
   const data = useSelector(state => state.postReducer.data);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     // Check if the pagerRef has been initialized
@@ -47,7 +52,33 @@ export default function PageContents({goToPage}) {
     handleCloseBottomSheet();
   };
 
-  const handleDeletePhoto = () => {}
+  const handleDeletePhoto = () => {
+    if (itemSelected) {
+      axios
+        .delete(`${BASE_URL}api/posts/${itemSelected?._id}`)
+        .then(response => {
+          setIsShowConfirmDialog(false);
+          Snackbar.show({
+            text: 'Delete Photo successfully',
+            duration: Snackbar.LENGTH_SHORT,
+          });
+          setItemSelected(null);
+          dispatch(fetchPostRequest());
+        })
+        .catch(err => {
+          console.log('delete image fail:', err);
+          Snackbar.show({
+            text: 'Delete photo failed',
+            duration: Snackbar.LENGTH_SHORT,
+            backgroundColor: 'red',
+          });
+        });
+    }
+  };
+
+  const handleDowloadImage = () => {
+    console.log(`${BASE_URL}${itemSelected?.image}`);
+  };
 
   // close bottom sheet
   const handleCloseBottomSheet = () => {
@@ -87,11 +118,19 @@ export default function PageContents({goToPage}) {
               <View key={index} className="flex-1 justify-center items-center">
                 <View
                   className="rounded-[50px] overflow-hidden"
-                  style={{width: dimen.width, height: dimen.width}}>
-                  <Image
+                  style={{
+                    width: dimen.width,
+                    height: dimen.width,
+                    margin: 2,
+                    borderRadius: 50,
+                    overflow: 'hidden',
+                  }}>
+                  <FastImage
                     source={{
                       uri: `${BASE_URL}${data.image}`,
+                      priority: FastImage.priority.normal,
                     }}
+                    style={{width: dimen.width, aspectRatio: 1}}
                     className="aspect-square"
                   />
                   {data.content ? (
@@ -144,18 +183,6 @@ export default function PageContents({goToPage}) {
           />
           <CricleButton
             icon={<IconSolid.HeartIcon color={'white'} size={35} />}
-            styleButton={{
-              marginHorizontal: 10,
-            }}
-          />
-
-          <CricleButton
-            icon={
-              <IconOutline.ChatBubbleOvalLeftEllipsisIcon
-                color={'white'}
-                size={35}
-              />
-            }
           />
         </View>
         <IconOutline.ShareIcon color={'white'} size={35} />
@@ -186,6 +213,7 @@ export default function PageContents({goToPage}) {
         <BottomSheetShowMoreOption
           onCloseBottomSheet={handleCloseBottomSheet}
           DeletePhoto={ConfirmDeletePhoto}
+          savePhoto={handleDowloadImage}
         />
       </BottomSheet>
       <ConfirmDialog
