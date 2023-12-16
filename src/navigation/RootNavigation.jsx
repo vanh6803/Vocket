@@ -7,6 +7,7 @@ import Main from '../screens/Main';
 import {colors} from '../assets/Colors';
 import Register from '../screens/Register';
 import ChatContainer from '../screens/ChatContainer';
+import ChatScreen from '../screens/ChatScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -21,7 +22,8 @@ export default function RootNavigation() {
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="Main" component={Main} />
-        <Stack.Screen name="chat" component={ChatContainer} />
+        <Stack.Screen name="chatContainer" component={ChatContainer} />
+        <Stack.Screen name="chat" component={ChatScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

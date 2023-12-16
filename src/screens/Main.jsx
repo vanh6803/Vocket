@@ -13,6 +13,7 @@ export default function Main() {
   const [currentPage, setCurrentPage] = useState(0);
   const pageRef = useRef();
   const dispatch = useDispatch();
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
 
   useEffect(() => {
     dispatch(fetchPostRequest());
@@ -35,7 +36,7 @@ export default function Main() {
             pageRef.current.setPage(1);
           }}
           nextChat={() => {
-            navigation.navigate('chat');
+            navigation.navigate('chatContainer');
           }}
         />
         <PageContents

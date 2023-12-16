@@ -12,28 +12,36 @@ export default function Header({
   title,
   iconRight,
   iconLeft,
+  styleContainer,
 }) {
   return (
     <View
-      className="flex flex-row justify-between"
-      style={{
-        marginHorizontal: dimen.width * 0.08,
-        marginVertical: dimen.height * 0.035,
-        marginTop: dimen.height * 0.045,
-      }}>
+      className="flex flex-row justify-between items-center"
+      style={[
+        {
+          marginHorizontal: dimen.width * 0.08,
+          marginVertical: dimen.height * 0.035,
+          marginTop: dimen.height * 0.045,
+        },
+        styleContainer,
+      ]}>
       <CricleButton
         onPress={onClickLeft}
         styleButton={styleButtonLeft}
         icon={iconLeft}
       />
-      <Text style={styleTitle} className="text-white">
+      <Text style={styleTitle} className="text-white text-lg font-semibold">
         {title}
       </Text>
-      <CricleButton
-        onPress={oncClickRight}
-        styleButton={styleButtonRight}
-        icon={iconRight}
-      />
+      {iconRight ? (
+        <CricleButton
+          onPress={oncClickRight}
+          styleButton={styleButtonRight}
+          icon={iconRight}
+        />
+      ) : (
+        <View className="w-8" />
+      )}
     </View>
   );
 }

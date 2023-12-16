@@ -29,7 +29,7 @@ export default function Login() {
   };
 
   const nextScreen = nameScreen => {
-    navigation.navigate(nameScreen);
+    navigation.replace(nameScreen);
   };
 
   return (
