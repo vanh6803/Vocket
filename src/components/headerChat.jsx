@@ -8,8 +8,8 @@ import * as IconOutline from 'react-native-heroicons/outline';
 const HeaderChat = ({onBackPress}) => {
   return (
     <View
-      className="flex-row items-center"
-      style={{marginTop: dimen.height * 0.045}}>
+      className="flex-row items-center py-2"
+      style={{marginTop: dimen.height * 0.025}}>
       <CricleButton
         onPress={onBackPress}
         icon={<IconOutline.ChevronLeftIcon color={'white'} size={30} />}

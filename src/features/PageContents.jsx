@@ -16,6 +16,9 @@ import axios from 'axios';
 import {fetchPostRequest} from '../redux/action/Post';
 import Snackbar from 'react-native-snackbar';
 import FastImage from 'react-native-fast-image';
+import {useNavigation} from '@react-navigation/native';
+import LottieView from 'lottie-react-native';
+import {amins} from './../assets/anims/index';
 
 export default function PageContents({goToPage}) {
   const pagerRef = useRef();
@@ -31,6 +34,7 @@ export default function PageContents({goToPage}) {
 
   const data = useSelector(state => state.postReducer.data);
   const dispatch = useDispatch();
+  const navigation = useNavigation();
 
   useEffect(() => {
     // Check if the pagerRef has been initialized
@@ -108,53 +112,71 @@ export default function PageContents({goToPage}) {
       />
       {/* TODO: body content */}
       <View className="flex-1  justify-center items-center">
-        <PagerView
-          ref={pagerRef}
-          orientation={'vertical'}
-          onPageSelected={onPageSelected}
-          style={{width: dimen.width, height: '100%'}}>
-          {data?.result.map((data, index) => {
-            return (
-              <View key={index} className="flex-1 justify-center items-center">
+        {data?.result.length > 0 ? (
+          <PagerView
+            ref={pagerRef}
+            orientation={'vertical'}
+            onPageSelected={onPageSelected}
+            style={{width: dimen.width, height: '100%'}}>
+            {data?.result.map((data, index) => {
+              return (
                 <View
-                  className="rounded-[50px] overflow-hidden"
-                  style={{
-                    width: dimen.width,
-                    height: dimen.width,
-                    margin: 2,
-                    borderRadius: 50,
-                    overflow: 'hidden',
-                  }}>
-                  <FastImage
-                    source={{
-                      uri: `${BASE_URL}${data.image}`,
-                      priority: FastImage.priority.normal,
-                    }}
-                    style={{width: dimen.width, aspectRatio: 1}}
-                    className="aspect-square"
-                  />
-                  {data.content ? (
-                    <Text
-                      className="absolute text-white bottom-3 rounded-3xl self-center text-base p-1.5 px-3"
-                      style={{backgroundColor: 'rgba(0, 0, 0,0.5)'}}>
-                      {data.content}
+                  key={index}
+                  className="flex-1 justify-center items-center">
+                  <View
+                    className="rounded-[50px] overflow-hidden"
+                    style={{
+                      width: dimen.width,
+                      height: dimen.width,
+                      margin: 2,
+                      borderRadius: 50,
+                      overflow: 'hidden',
+                    }}>
+                    <FastImage
+                      source={{
+                        uri: `${BASE_URL}${data.image}`,
+                        priority: FastImage.priority.normal,
+                      }}
+                      style={{width: dimen.width, aspectRatio: 1}}
+                      className="aspect-square"
+                    />
+                    {data.content ? (
+                      <Text
+                        className="absolute text-white bottom-3 rounded-3xl self-center text-base p-1.5 px-3"
+                        style={{backgroundColor: 'rgba(0, 0, 0,0.5)'}}>
+                        {data.content}
+                      </Text>
+                    ) : null}
+                  </View>
+                  <View
+                    className="p-2 px-4 rounded-3xl justify-center items-center"
+                    style={{
+                      marginTop: dimen.height * 0.05,
+                      backgroundColor: colors.bg_optacity,
+                    }}>
+                    <Text className="text-white text-base font-semibold">
+                      {data.user}
                     </Text>
-                  ) : null}
+                  </View>
                 </View>
-                <View
-                  className="p-2 px-4 rounded-3xl justify-center items-center"
-                  style={{
-                    marginTop: dimen.height * 0.05,
-                    backgroundColor: colors.bg_optacity,
-                  }}>
-                  <Text className="text-white text-base font-semibold">
-                    {data.user}
-                  </Text>
-                </View>
-              </View>
-            );
-          })}
-        </PagerView>
+              );
+            })}
+          </PagerView>
+        ) : (
+          <View>
+            <LottieView
+              source={amins.noData}
+              autoPlay
+              style={{
+                width: dimen.width,
+                height: dimen.width,
+              }}
+            />
+            <Text className="self-center text-white text-lg font-bold">
+              You need to make more friends
+            </Text>
+          </View>
+        )}
       </View>
       {/*TODO: footer */}
       <View
@@ -170,22 +192,33 @@ export default function PageContents({goToPage}) {
           }}
           icon={<IconOutline.Squares2X2Icon color={'white'} size={35} />}
         />
-        <View
-          className="flex-row p-2 px-3 rounded-3xl"
-          style={{backgroundColor: 'rgba(90, 90, 90,0.5)'}}>
-          <CricleButton
-            icon={
-              <IconOutline.ChatBubbleOvalLeftEllipsisIcon
-                color={'white'}
-                size={35}
-              />
-            }
-          />
-          <CricleButton
-            icon={<IconSolid.HeartIcon color={'white'} size={35} />}
-          />
-        </View>
-        <IconOutline.ShareIcon color={'white'} size={35} />
+        {data?.result.length > 0 ? (
+          <Pressable
+            onPress={() => {
+              navigation.navigate('chat');
+            }}
+            className="flex-row p-2 px-3 rounded-3xl items-center"
+            style={{backgroundColor: 'rgba(90, 90, 90,0.5)'}}>
+            <CricleButton
+              icon={
+                <IconOutline.ChatBubbleOvalLeftEllipsisIcon
+                  color={'white'}
+                  size={35}
+                />
+              }
+            />
+            <Text
+              className="text-white text-base"
+              style={{marginHorizontal: dimen.width * 0.05}}>
+              Gửi tin nhắn ....
+            </Text>
+          </Pressable>
+        ) : (
+          <View></View>
+        )}
+        <CricleButton
+          icon={<IconSolid.HeartIcon color={'white'} size={35} />}
+        />
       </View>
       {/* TODO: bottom sheet show all list product */}
       <BottomSheet

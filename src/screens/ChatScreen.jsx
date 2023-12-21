@@ -82,7 +82,7 @@ const ChatScreen = () => {
       <HeaderChat onBackPress={handleBack} />
       {/* body */}
       <FlatList
-        style={{backgroundColor: colors.bg_optacity, flex: 1}}
+        style={{backgroundColor: 'rgba(50,50,50,0.3)', flex: 1}}
         data={data}
         inverted
         renderItem={({item}) => {
@@ -121,7 +121,12 @@ const ChatScreen = () => {
         keyExtractor={item => item.id}
       />
       {/* Input */}
-      <View className="flex-row items-center mb-6 ">
+      <View
+        className="flex-row items-center"
+        style={{
+          marginBottom: dimen.height * 0.027,
+          marginTop: dimen.height * 0.01,
+        }}>
         <TextInput
           placeholder="enter message"
           placeholderTextColor={'gray'}

@@ -22,27 +22,16 @@ export default function RenderCamera({
 
   return (
     <View>
-      <View
-        className="rounded-[50px] overflow-hidden m-[2px]"
-        // style={{
-        //   width: dimen.width,
-        //   height: dimen.width,
-        //   margin: 2,
-        //   borderRadius: 50,
-        //   overflow: 'hidden',
-        // }}
-      >
+      <View className="rounded-[50px] overflow-hidden m-[2px]">
         <Camera
           ref={cameraRef}
           className="aspect-square"
-          // style={{
-          //   aspectRatio: 1,
-          // }}
           device={device}
           isActive={isActive}
           photo
           enableZoomGesture
           orientation="portrait"
+          focusable={true}
         />
       </View>
       <View

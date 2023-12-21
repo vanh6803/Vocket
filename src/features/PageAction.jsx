@@ -1,5 +1,5 @@
 import {View, Text, TouchableOpacity, Image} from 'react-native';
-import React, {useRef, useState} from 'react';
+import React, {useMemo, useRef, useState} from 'react';
 import * as IconOutline from 'react-native-heroicons/outline';
 import * as IconSolid from 'react-native-heroicons/solid';
 import {CameraRoll} from '@react-native-camera-roll/camera-roll';
@@ -9,6 +9,9 @@ import RenderCamera from './RenderCamera';
 import RenderImage from './RenderImage';
 import {globals} from '../styles/Global';
 import Header from '../components/Header';
+import BottomSheet from '@gorhom/bottom-sheet';
+import {colors} from '../assets/Colors';
+import BottomSheetProfile from '../components/BottomSheetProfile';
 
 export default function PageAction({goToPage, nextChat}) {
   const camera = useRef();
@@ -17,9 +20,12 @@ export default function PageAction({goToPage, nextChat}) {
   const [isFrontCamera, setIsFrontCamera] = useState(true);
   const [flash, setFlash] = useState(false);
 
+  const bottomSheetRef = useRef(null);
+  const snapPoints = useMemo(() => ['97%'], []);
+
   const handleTakePhoto = async () => {
     const photo = await camera.current.takePhoto({
-      enableShutterSound: true,
+      enableShutterSound: false,
       flash: flash ? 'on' : 'off',
       enableAutoRedEyeReduction: true,
       enableAutoStabilization: true,
@@ -95,6 +101,9 @@ export default function PageAction({goToPage, nextChat}) {
         styleButtonLeft={[globals.circleButton]}
         styleButtonRight={[globals.circleButton]}
         oncClickRight={nextChat}
+        onClickLeft={() => {
+          bottomSheetRef.current.expand();
+        }}
       />
       {!image ? (
         <RenderCamera
@@ -118,15 +127,21 @@ export default function PageAction({goToPage, nextChat}) {
       {/* footer */}
       <TouchableOpacity
         className="flex-1 justify-center items-center"
-        // style={{
-        //   flex: 1,
-        //   justifyContent: 'center',
-        //   alignItems: 'center',
-        // }}
         onPress={goToPage}>
         <Text className="text-white text-xl font-semibold">History</Text>
         <IconOutline.ChevronDoubleDownIcon color={'white'} size={40} />
       </TouchableOpacity>
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={-1}
+        snapPoints={snapPoints}
+        enablePanDownToClose
+        backgroundStyle={{backgroundColor: 'rgba(30,30,30,1)'}}
+        handleIndicatorStyle={{
+          backgroundColor: 'white',
+        }}>
+        <BottomSheetProfile />
+      </BottomSheet>
     </View>
   );
 }

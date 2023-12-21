@@ -49,8 +49,8 @@ export default function RenderImage({
       })
       .then(response => {
         console.log(response.data);
-        dispatch(fetchPostRequest());
         onClickClose();
+        dispatch(fetchPostRequest());
         Snackbar.show({
           text: 'created new post successfully',
           duration: Snackbar.LENGTH_SHORT,
