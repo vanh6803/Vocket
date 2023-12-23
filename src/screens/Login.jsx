@@ -7,29 +7,77 @@ import {
   Keyboard,
   TouchableOpacity,
   StyleSheet,
+  ActivityIndicator,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {colors} from '../assets/Colors';
-import {dimen} from '../constants';
+import {BASE_URL, dimen} from '../constants';
 import {icons} from '../assets/icons';
 import CricleButton from '../components/CricleButton';
 import {globals} from './../styles/Global';
 import CheckBox from '../components/CheckBox';
 import {useNavigation} from '@react-navigation/native';
+import Input from '../components/Input';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Snackbar from 'react-native-snackbar';
 
 export default function Login() {
   const navigation = useNavigation();
   const [check, setCheck] = useState(false);
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
+  const [loading, setLoading] = useState(false);
+  const [checkLogin, setCheckLogin] = useState(false);
+
+  useEffect(() => {
+    setCheckLogin(true);
+    // Check if a token exists in local storage
+    AsyncStorage.getItem('token').then(token => {
+      if (token) {
+        // Token exists, navigate to the 'Main' screen
+        setCheckLogin(false);
+        nextScreen('Main');
+      } else {
+        setCheckLogin(false);
+      }
+    });
+  }, []);
 
   const handleCheckBox = () => {
     setCheck(!check);
-    console.log(check);
   };
 
   const nextScreen = nameScreen => {
     navigation.replace(nameScreen);
+  };
+
+  const handleLogin = () => {
+    setLoading(true);
+    let data = {
+      email: email,
+      password: password,
+    };
+    console.log(data);
+    axios
+      .post(`${BASE_URL}api/login`, data)
+      .then(async response => {
+        console.log(response.data);
+        setLoading(false);
+        const data = response.data;
+        await AsyncStorage.setItem('token', data.token);
+        nextScreen('Main');
+      })
+      .catch(error => {
+        setLoading(false);
+        if (error.response) {
+          Snackbar.show({
+            text: error.response.data.message,
+            duration: Snackbar.LENGTH_SHORT,
+            textColor: '#FF3838',
+          });
+        }
+      });
   };
 
   return (
@@ -54,31 +102,25 @@ export default function Login() {
           className="flex-1"
           // style={{paddingTop: dimen.width * 0.06}}
         >
-          <TextInput
+          <Input
+            placeholder={'email'}
             placeholderTextColor={'gray'}
-            placeholder="haha"
-            className="rounded-xl text-white text-base"
             cursorColor={'#FFFFFF'}
-            style={{
-              backgroundColor: colors.bg_optacity,
-              marginHorizontal: dimen.width * 0.04,
-              paddingHorizontal: dimen.width * 0.03,
-              padding: dimen.width * 0.035,
+            onChangeText={text => {
+              setEmail(text);
             }}
           />
-          <TextInput
+          <Input
+            placeholder={'Password'}
             placeholderTextColor={'gray'}
-            placeholder="haha"
-            className="rounded-xl text-white text-base"
             cursorColor={'#FFFFFF'}
-            style={{
-              backgroundColor: colors.bg_optacity,
+            styleContainer={{
               marginTop: dimen.width * 0.06,
-              marginHorizontal: dimen.width * 0.04,
-              paddingHorizontal: dimen.width * 0.03,
-              padding: dimen.width * 0.035,
             }}
-            secureTextEntry
+            secureTextEntry={true}
+            onChangeText={text => {
+              setPassword(text);
+            }}
           />
           {/* section remember and forgot password */}
           <View
@@ -96,14 +138,18 @@ export default function Login() {
           </View>
           {/* login */}
           <TouchableOpacity
-            onPress={() => nextScreen('Main')}
-            className="justify-center items-center rounded-3xl"
+            onPress={handleLogin}
+            className="flex-row justify-center items-center rounded-3xl"
+            disabled={!email || !password || loading ? true : false}
             style={{
               backgroundColor: colors.primary,
               marginTop: dimen.width * 0.06,
               marginHorizontal: dimen.width * 0.04,
               padding: dimen.width * 0.03,
             }}>
+            {loading ? (
+              <ActivityIndicator color={'white'} className="px-1" />
+            ) : null}
             <Text className="text-white text-base">Login</Text>
           </TouchableOpacity>
           {/* section register */}
@@ -142,6 +188,17 @@ export default function Login() {
             />
           </View>
         </View>
+        {checkLogin ? (
+          <View
+            className="absolute justify-center items-center"
+            style={{
+              width: dimen.width,
+              height: dimen.height,
+              backgroundColor: 'rgba(60,60,60,0.4)',
+            }}>
+            <ActivityIndicator size={'large'} color={'white'} />
+          </View>
+        ) : null}
       </View>
     </TouchableWithoutFeedback>
   );

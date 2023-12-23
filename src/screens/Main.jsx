@@ -7,13 +7,23 @@ import {useDispatch, useSelector} from 'react-redux';
 import {fetchPostRequest} from '../redux/action/Post';
 import PageAction from '../features/PageAction';
 import PageContents from '../features/PageContents';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Main() {
   const navigation = useNavigation();
   const [currentPage, setCurrentPage] = useState(0);
+  const [token, setToken] = useState();
   const pageRef = useRef();
   const dispatch = useDispatch();
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+
+  useEffect(() => {
+    getToken();
+  }, []);
+
+  const getToken = async () => {
+    const token = await AsyncStorage.getItem('token');
+  };
 
   useEffect(() => {
     dispatch(fetchPostRequest());
