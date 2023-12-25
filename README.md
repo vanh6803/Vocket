@@ -14,8 +14,9 @@ The main goal of the project is to address the inconsistency issue between the L
 
 ```bash
 git clone https://github.com/vanh6803/Vocket.git
-git clone https://github.com/vanh6803/backend_vocket.git
 ```
+
+Note: Clone the Backend. Before proceeding, make sure to clone the backend of this project from [here](https://github.com/vanh6803/backend_vocket.git).
 
 ### Step 2: Install Dependencies
 
