@@ -20,7 +20,7 @@ export default function Header({
       style={[
         {
           marginHorizontal: dimen.width * 0.08,
-          marginVertical: dimen.height * 0.035,
+          marginVertical: dimen.height * 0.02,
           marginTop: dimen.height * 0.045,
         },
         styleContainer,

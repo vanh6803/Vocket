@@ -49,7 +49,7 @@ export default function Login() {
   };
 
   const nextScreen = nameScreen => {
-    navigation.replace(nameScreen);
+    navigation.navigate(nameScreen);
   };
 
   const handleLogin = () => {
@@ -66,7 +66,7 @@ export default function Login() {
         setLoading(false);
         const data = response.data;
         await AsyncStorage.setItem('token', data.token);
-        nextScreen('Main');
+        navigation.replace('Main');
       })
       .catch(error => {
         setLoading(false);

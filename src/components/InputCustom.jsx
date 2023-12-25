@@ -3,12 +3,23 @@ import React from 'react';
 import {dimen} from '../constants';
 import {colors} from '../assets/Colors';
 
+/**
+ * @param {Object} props - Props của component.
+ * @param {string} [props.placeholderTextColor] - Màu sắc cho placeholder.
+ * @param {string} [props.placeholder] - Placeholder cho TextInput.
+ * @param {Object} [props.styleInput] - Style cho TextInput.
+ * @param {'none' | 'text' | 'tel' | 'email' | 'numeric'} [props.inputMode='text'] - Chế độ nhập liệu (giá trị mặc định là 'text').
+ * @param {Object} [props.styleContainer] - Style cho container.
+ * @param {(text: string) => void} [props.onChangeText] - Hàm được gọi khi giá trị của TextInput thay đổi.
+ */
+
 export default function InputCustom({
   placeholderTextColor,
   placeholder,
   styleInput,
-  isFocus,
+  inputMode = 'text',
   styleContainer,
+  onChangeText,
 }) {
   return (
     <TouchableOpacity
@@ -25,7 +36,10 @@ export default function InputCustom({
         placeholder={placeholder}
         placeholderTextColor={placeholderTextColor}
         style={styleInput}
-        className="flex-1"
+        inputMode={inputMode}
+        className="flex-1 text-white"
+        onChangeText={onChangeText}
+        cursorColor={'white'}
       />
     </TouchableOpacity>
   );
