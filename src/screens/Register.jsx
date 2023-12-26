@@ -144,6 +144,7 @@ export default function Register() {
           }, 2000);
         })
         .catch(err => {
+  
           console.log(err);
           Snackbar.show({
             text: 'register failed',
@@ -152,7 +153,7 @@ export default function Register() {
         });
     }
   };
-  
+
   return (
     <View
       style={{
