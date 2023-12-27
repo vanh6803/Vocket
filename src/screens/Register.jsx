@@ -151,6 +151,7 @@ export default function Register() {
             duration: Snackbar.LENGTH_SHORT,
           });
         });
+      // navigation.goBack();
     }
   };
 
