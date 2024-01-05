@@ -9,7 +9,7 @@ import RenderCamera from './RenderCamera';
 import RenderImage from './RenderImage';
 import {globals} from '../styles/Global';
 import Header from '../components/Header';
-import BottomSheet from '@gorhom/bottom-sheet';
+import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import {colors} from '../assets/Colors';
 import BottomSheetProfile from '../components/BottomSheetProfile';
 
@@ -140,7 +140,9 @@ export default function PageAction({goToPage, nextChat}) {
         handleIndicatorStyle={{
           backgroundColor: 'white',
         }}>
-        <BottomSheetProfile />
+        <BottomSheetScrollView>
+          <BottomSheetProfile />
+        </BottomSheetScrollView>
       </BottomSheet>
     </View>
   );

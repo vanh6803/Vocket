@@ -155,7 +155,7 @@ export default function Login() {
           {/* section register */}
           <View
             className="flex-row justify-center items-center"
-            style={{marginTop: dimen.width * 0.03}}>
+            style={{marginTop: dimen.width * 0.05}}>
             <Text className="text-white ">Create new account?</Text>
             <TouchableOpacity
               className="items-center justify-center"

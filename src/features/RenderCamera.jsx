@@ -6,6 +6,7 @@ import * as IconSolid from 'react-native-heroicons/solid';
 import {useAppState} from '@react-native-community/hooks';
 import {dimen} from '../constants/index';
 import CricleButton from '../components/CricleButton';
+import {useIsFocused} from '@react-navigation/native';
 
 export default function RenderCamera({
   takePhoto,
@@ -16,9 +17,9 @@ export default function RenderCamera({
   toggleFlash,
 }) {
   const device = useCameraDevice(isFront ? 'front' : 'back'); // Chọn camera dựa trên trạng thái
-
+  const isFocuse = useIsFocused();
   const appState = useAppState();
-  const isActive = appState === 'active';
+  const isActive = isFocuse || appState === 'active';
 
   return (
     <View>
@@ -32,6 +33,8 @@ export default function RenderCamera({
           enableZoomGesture
           orientation="portrait"
           focusable={true}
+          resizeMode="cover"
+          photoHdr
         />
       </View>
       <View
