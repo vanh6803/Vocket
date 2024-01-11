@@ -34,8 +34,8 @@ export default function Register() {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const [confirmPassword, setConfirmPassword] = useState();
-  const [username, setUsername] = useState();
-  const [fullName, setFullName] = useState();
+  const [lastName, setLastName] = useState();
+  const [firstName, setFirstName] = useState();
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   useEffect(() => {
@@ -112,24 +112,24 @@ export default function Register() {
       pager.current.setPage(pageSelected + 1);
       setPageSelected(pageSelected + 1);
     } else {
-      if (!fullName) {
+      if (!firstName) {
         Snackbar.show({
-          text: 'please enter full name',
+          text: 'please enter first name',
           duration: Snackbar.LENGTH_SHORT,
         });
         return;
       }
-      if (!username) {
+      if (!lastName) {
         Snackbar.show({
-          text: 'please enter username',
+          text: 'please enter last name',
           duration: Snackbar.LENGTH_SHORT,
         });
         return;
       }
+      let fullName = firstName + ' ' + lastName;
       let data = {
         email: email,
         password: password,
-        username: username,
         fullName: fullName,
       };
       console.log(data);
@@ -144,7 +144,6 @@ export default function Register() {
           }, 2000);
         })
         .catch(err => {
-  
           console.log(err);
           Snackbar.show({
             text: 'register failed',
@@ -199,11 +198,11 @@ export default function Register() {
           />
           <CreateUserName
             key={3}
-            onChangeTextUsername={text => {
-              setUsername(text);
+            onChangeFirstName={text => {
+              setFirstName(text);
             }}
-            onChangeTextFullName={text => {
-              setFullName(text);
+            onChangeLastName={text => {
+              setLastName(text);
             }}
           />
         </PagerView>
@@ -290,20 +289,20 @@ const CreatePassword = ({
   );
 };
 
-const CreateUserName = ({onChangeTextFullName, onChangeTextUsername}) => {
+const CreateUserName = ({onChangeFirstName, onChangeLastName}) => {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View className="flex-1 justify-center items-center">
         <InputCustom
-          placeholder="Enter full name"
+          placeholder="Enter first name"
           placeholderTextColor={'gray'}
-          onChangeText={onChangeTextFullName}
+          onChangeText={onChangeFirstName}
         />
         <InputCustom
-          placeholder="Enter username"
+          placeholder="Enter last name"
           placeholderTextColor={'gray'}
           styleContainer={{marginTop: dimen.width * 0.02}}
-          onChangeText={onChangeTextUsername}
+          onChangeText={onChangeLastName}
         />
       </View>
     </TouchableWithoutFeedback>

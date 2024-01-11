@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, StyleSheet, Image, Text, ScrollView} from 'react-native';
 import FastImage from 'react-native-fast-image';
-import {dimen} from '../constants';
+import {BASE_URL, dimen} from '../constants';
 import * as IconSolid from 'react-native-heroicons/solid';
 import * as IconOutline from 'react-native-heroicons/outline';
 import Icon from 'react-native-vector-icons/FontAwesome5';
@@ -9,8 +9,33 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import {colors} from '../assets/Colors';
 import BoxContainer from './BoxContainer';
 import ButtonOption from './ButtonOption';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {StackActions, useNavigation} from '@react-navigation/native';
 
 const BottomSheetProfile = ({data}) => {
+  const navigation = useNavigation();
+
+  const logout = async () => {
+    console.log('a');
+    const token = await AsyncStorage.getItem('token');
+    if (token) {
+      axios
+        .get(`${BASE_URL}api/logout`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then(async response => {
+          await AsyncStorage.clear();
+          navigation.replace('Login');
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+  };
+
   return (
     <View className="flex-1" style={{marginBottom: dimen.height * 0.03}}>
       {/* header */}
@@ -116,6 +141,7 @@ const BottomSheetProfile = ({data}) => {
           />
         }>
         <ButtonOption
+          onPress={logout}
           title={'Sign out'}
           icon={
             <IconSolid.ArrowLeftEndOnRectangleIcon color={'white'} size={20} />
