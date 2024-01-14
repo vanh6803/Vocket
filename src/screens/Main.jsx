@@ -8,26 +8,26 @@ import {fetchPostRequest} from '../redux/action/Post';
 import PageAction from '../features/PageAction';
 import PageContents from '../features/PageContents';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {fetchProfileRequest} from './../redux/action/Profile';
 
 export default function Main() {
   const navigation = useNavigation();
   const [currentPage, setCurrentPage] = useState(0);
-  const [token, setToken] = useState();
   const pageRef = useRef();
   const dispatch = useDispatch();
-  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
-
-  useEffect(() => {
-    getToken();
-  }, []);
-
-  const getToken = async () => {
-    const token = await AsyncStorage.getItem('token');
-  };
 
   useEffect(() => {
     dispatch(fetchPostRequest());
-  }, [dispatch]);
+  }, []);
+
+  useEffect(() => {
+    const fetchTokenAndProfile = async () => {
+      const token = await AsyncStorage.getItem('token');
+      dispatch(fetchProfileRequest(token));
+    };
+
+    fetchTokenAndProfile();
+  }, []);
 
   return (
     <View className={`flex flex-1`} style={{backgroundColor: colors.bg_dark}}>

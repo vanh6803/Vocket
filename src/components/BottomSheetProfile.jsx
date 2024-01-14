@@ -12,9 +12,14 @@ import ButtonOption from './ButtonOption';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {StackActions, useNavigation} from '@react-navigation/native';
+import {useDispatch} from 'react-redux';
+import {signOut} from '../redux/action/Auth';
 
 const BottomSheetProfile = ({data}) => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+
+  console.log(data);
 
   const logout = async () => {
     console.log('a');
@@ -28,7 +33,7 @@ const BottomSheetProfile = ({data}) => {
         })
         .then(async response => {
           await AsyncStorage.clear();
-          navigation.replace('Login');
+          dispatch(signOut());
         })
         .catch(error => {
           console.log(error);
@@ -59,7 +64,7 @@ const BottomSheetProfile = ({data}) => {
       <Text
         className="text-white text-2xl font-semibold self-center"
         style={{marginTop: dimen.width * 0.03}}>
-        Name
+        {data?.fullName}
       </Text>
       <View className="flex-row justify-center items-center">
         <TouchableOpacity

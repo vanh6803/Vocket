@@ -12,10 +12,15 @@ import Header from '../components/Header';
 import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import {colors} from '../assets/Colors';
 import BottomSheetProfile from '../components/BottomSheetProfile';
+import {useSelector} from 'react-redux';
+import FastImage from 'react-native-fast-image';
+import {BASE_URL, dimen} from '../constants';
 
 export default function PageAction({goToPage, nextChat}) {
   const camera = useRef();
   const [image, setImage] = useState();
+
+  const profile = useSelector(state => state.profileReducer.data);
 
   const [isFrontCamera, setIsFrontCamera] = useState(true);
   const [flash, setFlash] = useState(false);
@@ -94,7 +99,17 @@ export default function PageAction({goToPage, nextChat}) {
   return (
     <View className="flex-1">
       <Header
-        iconLeft={<IconSolid.UserCircleIcon color={'white'} size={30} />}
+        // iconLeft={<IconSolid.UserCircleIcon color={'white'} size={30} />}
+        iconLeft={
+          profile?.result.avatar === '' ? (
+            <FastImage
+              source={{uri: `${BASE_URL}${profile?.result.avatar}`}}
+              style={{width: dimen.width * 0.07, height: dimen.width * 0.07}}
+            />
+          ) : (
+            <IconSolid.UserCircleIcon color={'white'} size={30} />
+          )
+        }
         iconRight={
           <IconSolid.ChatBubbleOvalLeftIcon color={'white'} size={30} />
         }
@@ -141,7 +156,7 @@ export default function PageAction({goToPage, nextChat}) {
           backgroundColor: 'white',
         }}>
         <BottomSheetScrollView>
-          <BottomSheetProfile />
+          <BottomSheetProfile data={profile?.result} />
         </BottomSheetScrollView>
       </BottomSheet>
     </View>

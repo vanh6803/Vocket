@@ -21,6 +21,8 @@ import Input from '../components/Input';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Snackbar from 'react-native-snackbar';
+import {useDispatch} from 'react-redux';
+import {signIn} from '../redux/action/Auth';
 
 export default function Login() {
   const navigation = useNavigation();
@@ -28,21 +30,8 @@ export default function Login() {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const [loading, setLoading] = useState(false);
-  const [checkLogin, setCheckLogin] = useState(false);
 
-  useEffect(() => {
-    setCheckLogin(true);
-    // Check if a token exists in local storage
-    AsyncStorage.getItem('token').then(token => {
-      if (token) {
-        // Token exists, navigate to the 'Main' screen
-        setCheckLogin(false);
-        nextScreen('Main');
-      } else {
-        setCheckLogin(false);
-      }
-    });
-  }, []);
+  const dispatch = useDispatch();
 
   const handleCheckBox = () => {
     setCheck(!check);
@@ -65,8 +54,9 @@ export default function Login() {
         console.log(response.data);
         setLoading(false);
         const data = response.data;
+        const token = data.token;
         await AsyncStorage.setItem('token', data.token);
-        navigation.replace('Main');
+        dispatch(signIn(token));
       })
       .catch(error => {
         setLoading(false);
@@ -188,17 +178,6 @@ export default function Login() {
             />
           </View>
         </View>
-        {checkLogin ? (
-          <View
-            className="absolute justify-center items-center"
-            style={{
-              width: dimen.width,
-              height: dimen.height,
-              backgroundColor: 'rgba(60,60,60,0.4)',
-            }}>
-            <ActivityIndicator size={'large'} color={'white'} />
-          </View>
-        ) : null}
       </View>
     </TouchableWithoutFeedback>
   );
