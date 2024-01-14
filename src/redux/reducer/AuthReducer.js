@@ -11,7 +11,7 @@ const authReducer = (state = initialState, action) => {
     case RESTORE_TOKEN:
       return {
         ...state,
-        userToken: action.token,
+        userToken: action.payload,
         isLoading: true,
       };
     case SIGN_IN:
@@ -19,7 +19,7 @@ const authReducer = (state = initialState, action) => {
         ...state,
         isLogin: true,
         isLoading: false,
-        userToken: action.token,
+        userToken: action.payload,
       };
     case SIGN_OUT:
       return {

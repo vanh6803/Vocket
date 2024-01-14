@@ -6,7 +6,9 @@ import {restoreToken, signIn, signOut} from '../action/Auth';
 function* restoreTokenSaga(action) {
   try {
     // const userToken = yield call(AsyncStorage.getItem, 'token');
-    const userToken = action.payload.token;
+    const userToken = action.payload;
+    console.log('payload: ', action.payload);
+    console.log(userToken);
     if (userToken) {
       yield put(signIn(userToken));
     } else {
