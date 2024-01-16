@@ -1,7 +1,6 @@
-import {View, Text, Image} from 'react-native';
+import {View, Text, Image, Easing} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Login from '../screens/Login';
 import Main from '../screens/Main';
 import {colors} from '../assets/Colors';
@@ -13,8 +12,13 @@ import {useDispatch, useSelector} from 'react-redux';
 import {restoreToken} from '../redux/action/Auth';
 import {icons} from '../assets/icons';
 import {dimen} from '../constants';
+import {
+  CardStyleInterpolators,
+  TransitionSpecs,
+  createStackNavigator,
+} from '@react-navigation/stack';
 
-const Stack = createNativeStackNavigator();
+const Stack = createStackNavigator();
 
 export default function RootNavigation() {
   const isLogin = useSelector(state => state.authReducer.isLogin);
@@ -49,18 +53,59 @@ export default function RootNavigation() {
   //   );
   // }
 
+  const config = {
+    animation: 'spring',
+    config: {
+      stiffness: 1000,
+      damping: 50,
+      mass: 3,
+      overshootClamping: false,
+      restDisplacementThreshold: 0.01,
+      restSpeedThreshold: 0.01,
+    },
+  };
+
+  const closeConfig = {
+    animation: 'timing',
+    config: {
+      duration: 200,
+      easing: Easing.inOut,
+    },
+  };
+
   return (
     <NavigationContainer>
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
           navigationBarColor: colors.bg_dark,
+          animation: 'slide_from_right',
+          gestureEnabled: true,
+          gestureDirection: 'horizontal',
         }}>
         {isLogin ? (
           <>
-            <Stack.Screen name="Main" component={Main} />
-            <Stack.Screen name="chatContainer" component={ChatContainer} />
-            <Stack.Screen name="chat" component={ChatScreen} />
+            <Stack.Screen
+              name="Main"
+              component={Main}
+              options={{gestureEnabled: false}}
+            />
+            <Stack.Screen
+              name="chatContainer"
+              component={ChatContainer}
+              options={{gestureEnabled: false}}
+            />
+            <Stack.Screen
+              name="chat"
+              component={ChatScreen}
+              options={{
+                transitionSpec: {
+                  open: config,
+                  close: closeConfig,
+                },
+                cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+              }}
+            />
           </>
         ) : (
           <>

@@ -10,7 +10,6 @@ import RenderImage from './RenderImage';
 import {globals} from '../styles/Global';
 import Header from '../components/Header';
 import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
-import {colors} from '../assets/Colors';
 import BottomSheetProfile from '../components/BottomSheetProfile';
 import {useSelector} from 'react-redux';
 import FastImage from 'react-native-fast-image';
@@ -26,7 +25,7 @@ export default function PageAction({goToPage, nextChat}) {
   const [flash, setFlash] = useState(false);
 
   const bottomSheetRef = useRef(null);
-  const snapPoints = useMemo(() => ['97%'], []);
+  const snapPoints = useMemo(() => ['100%'], []);
 
   const handleTakePhoto = async () => {
     const photo = await camera.current.takePhoto({
@@ -101,10 +100,14 @@ export default function PageAction({goToPage, nextChat}) {
       <Header
         // iconLeft={<IconSolid.UserCircleIcon color={'white'} size={30} />}
         iconLeft={
-          profile?.result.avatar === '' ? (
+          profile?.result.avatar != '' ? (
             <FastImage
               source={{uri: `${BASE_URL}${profile?.result.avatar}`}}
-              style={{width: dimen.width * 0.07, height: dimen.width * 0.07}}
+              style={{
+                width: dimen.width * 0.07,
+                height: dimen.width * 0.07,
+                borderRadius: (dimen.width * 0.07) / 2,
+              }}
             />
           ) : (
             <IconSolid.UserCircleIcon color={'white'} size={30} />
@@ -113,6 +116,21 @@ export default function PageAction({goToPage, nextChat}) {
         iconRight={
           <IconSolid.ChatBubbleOvalLeftIcon color={'white'} size={30} />
         }
+        boxChildren={
+          <View
+            style={{
+              padding: dimen.width * 0.025,
+              paddingHorizontal: dimen.width * 0.04,
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <IconSolid.UsersIcon color={'white'} />
+            <View style={{width: dimen.width * 0.01}} />
+            <Text className="text-white font-medium text-base">Friend</Text>
+          </View>
+        }
+        boxStyle={{backgroundColor: 'rgba(80,80,80,0.6)'}}
         styleButtonLeft={[globals.circleButton]}
         styleButtonRight={[globals.circleButton]}
         oncClickRight={nextChat}

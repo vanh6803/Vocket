@@ -10,14 +10,12 @@ import React, {useState} from 'react';
 import * as IconOutline from 'react-native-heroicons/outline';
 import * as IconSolid from 'react-native-heroicons/solid';
 import {dimen} from '../constants/index';
-import {colors} from '../assets/Colors';
 import CricleButton from '../components/CricleButton';
 import {globals} from '../styles/Global';
 import axios from 'axios';
 import {BASE_URL} from '../constants/index';
 import {useDispatch, useSelector} from 'react-redux';
 import {fetchPostRequest} from '../redux/action/Post';
-import Toast from '../components/Toast';
 import Snackbar from 'react-native-snackbar';
 
 export default function RenderImage({
@@ -28,7 +26,7 @@ export default function RenderImage({
 }) {
   const [content, setContent] = useState();
   const dispatch = useDispatch();
-
+  const profile = useSelector(state => state.profileReducer.data);
   const uri = isFront ? image.uri : `file://${image.path}`;
   const sendPost = () => {
     const formData = new FormData();
@@ -45,6 +43,7 @@ export default function RenderImage({
       .post(`${BASE_URL}api/posts`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
+          
         },
       })
       .then(response => {

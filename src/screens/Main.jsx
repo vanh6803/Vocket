@@ -15,18 +15,14 @@ export default function Main() {
   const [currentPage, setCurrentPage] = useState(0);
   const pageRef = useRef();
   const dispatch = useDispatch();
+  const token = useSelector(state => state.authReducer.userToken);
 
   useEffect(() => {
     dispatch(fetchPostRequest());
   }, []);
 
   useEffect(() => {
-    const fetchTokenAndProfile = async () => {
-      const token = await AsyncStorage.getItem('token');
-      dispatch(fetchProfileRequest(token));
-    };
-
-    fetchTokenAndProfile();
+    dispatch(fetchProfileRequest(token));
   }, []);
 
   return (

@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {colors} from '../assets/Colors';
@@ -71,10 +72,18 @@ export default function Login() {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} className="flex-1">
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={{flex: 1}}>
+      {/* <ScrollView
+        style={{
+          flex: 1,
+          width: dimen.width,
+          height: dimen.height,
+          backgroundColor: colors.bg_dark,
+        }}> */}
       <View
         className="flex-1"
         style={{
+          flex: 1,
           backgroundColor: colors.bg_dark,
         }}>
         {/* header */}
@@ -89,7 +98,7 @@ export default function Login() {
         </View>
         {/* body */}
         <View
-          className="flex-1"
+          style={{flex: 1}}
           // style={{paddingTop: dimen.width * 0.06}}
         >
           <Input
@@ -179,6 +188,7 @@ export default function Login() {
           </View>
         </View>
       </View>
+      {/* </ScrollView> */}
     </TouchableWithoutFeedback>
   );
 }

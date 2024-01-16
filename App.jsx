@@ -1,10 +1,16 @@
 import React, {useEffect} from 'react';
 import RootNavigation from './src/navigation/RootNavigation';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import {StatusBar, PermissionsAndroid, Platform} from 'react-native';
+import {
+  StatusBar,
+  PermissionsAndroid,
+  Platform,
+  SafeAreaView,
+} from 'react-native';
 import {colors} from './src/assets/Colors';
 import {Provider} from 'react-redux';
 import store from './src/redux/store';
+import {dimen} from './src/constants';
 
 const App = () => {
   useEffect(() => {
@@ -49,9 +55,11 @@ const App = () => {
   };
   return (
     <Provider store={store}>
-      <GestureHandlerRootView className="flex-1">
-        <StatusBar backgroundColor={colors.bg_dark} />
-        <RootNavigation />
+      <GestureHandlerRootView style={{flex: 1}}>
+        <SafeAreaView style={{flex: 1}}>
+          <StatusBar backgroundColor={colors.bg_dark} />
+          <RootNavigation />
+        </SafeAreaView>
       </GestureHandlerRootView>
     </Provider>
   );

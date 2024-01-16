@@ -8,8 +8,8 @@ export default function Header({
   onClickLeft,
   styleButtonRight,
   styleButtonLeft,
-  styleTitle,
-  title,
+  boxStyle,
+  boxChildren,
   iconRight,
   iconLeft,
   styleContainer,
@@ -21,7 +21,6 @@ export default function Header({
         {
           marginHorizontal: dimen.width * 0.08,
           marginVertical: dimen.height * 0.02,
-          marginTop: dimen.height * 0.045,
         },
         styleContainer,
       ]}>
@@ -30,9 +29,9 @@ export default function Header({
         styleButton={styleButtonLeft}
         icon={iconLeft}
       />
-      <Text style={styleTitle} className="text-white text-lg font-semibold">
-        {title}
-      </Text>
+      <View style={boxStyle} className="overflow-hidden rounded-3xl">
+        {boxChildren}
+      </View>
       {iconRight ? (
         <CricleButton
           onPress={oncClickRight}

@@ -61,7 +61,9 @@ const ChatContainer = () => {
         onClickLeft={() => {
           navigation.goBack();
         }}
-        title={'Message'}
+        boxChildren={
+          <Text className="text-white font-bold text-xl">Message</Text>
+        }
       />
       <View
         className="flex-row rounded-3xl items-center"

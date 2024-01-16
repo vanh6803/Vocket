@@ -130,7 +130,7 @@ const ChatScreen = () => {
         <TextInput
           placeholder="enter message"
           placeholderTextColor={'gray'}
-          className="border border-white flex-1 mt-1 mx-2 p-2 px-5 rounded-3xl"
+          className="border border-white flex-1 mt-1 mx-2 p-2 px-5 rounded-3xl text-white"
           cursorColor={'white'}
         />
         <CricleButton

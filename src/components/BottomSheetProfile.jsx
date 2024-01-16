@@ -19,8 +19,6 @@ const BottomSheetProfile = ({data}) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
-  console.log(data);
-
   const logout = async () => {
     console.log('a');
     const token = await AsyncStorage.getItem('token');
@@ -41,6 +39,17 @@ const BottomSheetProfile = ({data}) => {
     }
   };
 
+  const shortenName = name => {
+    if (name) {
+      const words = name.split(' ');
+      const initials = words.map(word => (word.length > 1 ? word[0] : ''));
+      const result = initials.join('').toUpperCase();
+      return result;
+    } else {
+      return '';
+    }
+  };
+
   return (
     <View className="flex-1" style={{marginBottom: dimen.height * 0.03}}>
       {/* header */}
@@ -50,16 +59,27 @@ const BottomSheetProfile = ({data}) => {
           width: dimen.width * 0.3,
           height: dimen.width * 0.3,
           marginTop: dimen.height * 0.03,
+          overflow: 'hidden',
         }}>
-        <FastImage
-          source={{
-            uri: 'https://kenh14cdn.com/thumb_w/660/203336854389633024/2022/3/28/photo-1-16484498472652092974741.jpg',
-          }}
-          style={{
-            aspectRatio: 1,
-          }}
-          className="rounded-full"
-        />
+        {data?.avatar != '' ? (
+          <FastImage
+            source={{
+              uri: `${BASE_URL}${data?.avatar}`,
+            }}
+            style={{
+              aspectRatio: 1,
+            }}
+            className="rounded-full"
+          />
+        ) : (
+          <View
+            style={{backgroundColor: colors.bg_optacity, flex: 1}}
+            className="rounded-full justify-center items-center">
+            <Text className="text-white font-extrabold text-3xl">
+              {shortenName(data?.fullName)}
+            </Text>
+          </View>
+        )}
       </View>
       <Text
         className="text-white text-2xl font-semibold self-center"
