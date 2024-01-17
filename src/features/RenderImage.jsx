@@ -43,7 +43,7 @@ export default function RenderImage({
       .post(`${BASE_URL}api/posts`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          
+          Authorization: `Bearer ${profile?.result.token}`,
         },
       })
       .then(response => {
@@ -84,16 +84,18 @@ export default function RenderImage({
 
       <View
         className="flex flex-row justify-around items-center"
-        style={{marginTop: dimen.height * 0.05}}>
+        style={{marginTop: dimen.height * 0.03}}>
         <CricleButton
-          icon={<IconOutline.XMarkIcon color={'white'} size={45} />}
+          icon={
+            <IconOutline.XMarkIcon color={'white'} size={dimen.width * 0.1} />
+          }
           onPress={onClickClose}
         />
         <CricleButton
           icon={
             <IconOutline.PaperAirplaneIcon
               color={'white'}
-              size={45}
+              size={dimen.width * 0.1}
               style={{transform: [{rotate: '-45deg'}]}}
             />
           }
@@ -102,7 +104,12 @@ export default function RenderImage({
         />
         <CricleButton
           onPress={toggleSaveImage}
-          icon={<IconOutline.ArrowDownTrayIcon color={'white'} size={45} />}
+          icon={
+            <IconOutline.ArrowDownTrayIcon
+              color={'white'}
+              size={dimen.width * 0.1}
+            />
+          }
         />
       </View>
     </View>
@@ -111,8 +118,8 @@ export default function RenderImage({
 
 const styles = StyleSheet.create({
   styleButtonSend: {
-    width: 100,
-    height: 100,
+    width: dimen.width * 0.2,
+    height: dimen.width * 0.2,
     backgroundColor: 'rgba(120,120,120,0.9)',
   },
 });

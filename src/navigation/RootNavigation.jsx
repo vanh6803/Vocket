@@ -1,6 +1,11 @@
 import {View, Text, Image, Easing} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
+import {
+  CardStyleInterpolators,
+  TransitionSpecs,
+  createStackNavigator,
+} from '@react-navigation/stack';
 import Login from '../screens/Login';
 import Main from '../screens/Main';
 import {colors} from '../assets/Colors';
@@ -12,11 +17,6 @@ import {useDispatch, useSelector} from 'react-redux';
 import {restoreToken} from '../redux/action/Auth';
 import {icons} from '../assets/icons';
 import {dimen} from '../constants';
-import {
-  CardStyleInterpolators,
-  TransitionSpecs,
-  createStackNavigator,
-} from '@react-navigation/stack';
 
 const Stack = createStackNavigator();
 
@@ -53,35 +53,15 @@ export default function RootNavigation() {
   //   );
   // }
 
-  const config = {
-    animation: 'spring',
-    config: {
-      stiffness: 1000,
-      damping: 50,
-      mass: 3,
-      overshootClamping: false,
-      restDisplacementThreshold: 0.01,
-      restSpeedThreshold: 0.01,
-    },
-  };
-
-  const closeConfig = {
-    animation: 'timing',
-    config: {
-      duration: 200,
-      easing: Easing.inOut,
-    },
-  };
-
   return (
     <NavigationContainer>
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
           navigationBarColor: colors.bg_dark,
-          animation: 'slide_from_right',
           gestureEnabled: true,
           gestureDirection: 'horizontal',
+          cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
         }}>
         {isLogin ? (
           <>
@@ -100,10 +80,11 @@ export default function RootNavigation() {
               component={ChatScreen}
               options={{
                 transitionSpec: {
-                  open: config,
-                  close: closeConfig,
+                  open: TransitionSpecs.TransitionIOSSpec,
+                  close: TransitionSpecs.TransitionIOSSpec,
                 },
                 cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+                gestureResponseDistance: 115,
               }}
             />
           </>

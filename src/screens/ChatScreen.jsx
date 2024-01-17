@@ -20,7 +20,7 @@ const data = [
     id: 1,
     name: 'vanh',
     avatar:
-      'https://scontent.fhan14-2.fna.fbcdn.net/v/t39.30808-6/277307779_321723253282654_9089454335861660638_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=7bbb8a&_nc_ohc=LLjezRyjhF4AX93UOSY&_nc_ht=scontent.fhan14-2.fna&oh=00_AfCJEc7vOZQ34OfCINbI7u46NZNABFhF3eFzdokZ3NBBaw&oe=657B8ABF',
+      'https://kenh14cdn.com/thumb_w/660/203336854389633024/2022/3/28/photo-1-16484498472652092974741.jpg',
     uid: 'a',
     content: 'haha',
   },
@@ -28,7 +28,7 @@ const data = [
     id: 2,
     name: 'vanh',
     avatar:
-      'https://scontent.fhan14-2.fna.fbcdn.net/v/t39.30808-6/277307779_321723253282654_9089454335861660638_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=7bbb8a&_nc_ohc=LLjezRyjhF4AX93UOSY&_nc_ht=scontent.fhan14-2.fna&oh=00_AfCJEc7vOZQ34OfCINbI7u46NZNABFhF3eFzdokZ3NBBaw&oe=657B8ABF',
+      'https://kenh14cdn.com/thumb_w/660/203336854389633024/2022/3/28/photo-1-16484498472652092974741.jpg',
     uid: 'b',
     content: 'hehe',
   },
@@ -36,7 +36,7 @@ const data = [
     id: 3,
     name: 'vanh',
     avatar:
-      'https://scontent.fhan14-2.fna.fbcdn.net/v/t39.30808-6/277307779_321723253282654_9089454335861660638_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=7bbb8a&_nc_ohc=LLjezRyjhF4AX93UOSY&_nc_ht=scontent.fhan14-2.fna&oh=00_AfCJEc7vOZQ34OfCINbI7u46NZNABFhF3eFzdokZ3NBBaw&oe=657B8ABF',
+      'https://kenh14cdn.com/thumb_w/660/203336854389633024/2022/3/28/photo-1-16484498472652092974741.jpg',
     uid: 'a',
     content: 'abcxyz',
   },
@@ -44,7 +44,7 @@ const data = [
     id: 4,
     name: 'vanh',
     avatar:
-      'https://scontent.fhan14-2.fna.fbcdn.net/v/t39.30808-6/277307779_321723253282654_9089454335861660638_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=7bbb8a&_nc_ohc=LLjezRyjhF4AX93UOSY&_nc_ht=scontent.fhan14-2.fna&oh=00_AfCJEc7vOZQ34OfCINbI7u46NZNABFhF3eFzdokZ3NBBaw&oe=657B8ABF',
+      'https://kenh14cdn.com/thumb_w/660/203336854389633024/2022/3/28/photo-1-16484498472652092974741.jpg',
     uid: 'b',
     content: 'haha',
   },
@@ -52,7 +52,7 @@ const data = [
     id: 5,
     name: 'vanh',
     avatar:
-      'https://scontent.fhan14-2.fna.fbcdn.net/v/t39.30808-6/277307779_321723253282654_9089454335861660638_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=7bbb8a&_nc_ohc=LLjezRyjhF4AX93UOSY&_nc_ht=scontent.fhan14-2.fna&oh=00_AfCJEc7vOZQ34OfCINbI7u46NZNABFhF3eFzdokZ3NBBaw&oe=657B8ABF',
+      'https://kenh14cdn.com/thumb_w/660/203336854389633024/2022/3/28/photo-1-16484498472652092974741.jpg',
     uid: 'b',
     content:
       "It's important to highlight the navigation prop is not passed in to all components; only screen components receive this prop automatically! React Navigation doesn't do any magic here. For example, if you were to define a MyBackButton component and render it as a child of a screen component, you would not be able to access the navigation prop on it. If, however, you wish to access the navigation prop in any of your components, you may use the useNavigation hook.",
@@ -61,7 +61,7 @@ const data = [
     id: 6,
     name: 'vanh',
     avatar:
-      'https://scontent.fhan14-2.fna.fbcdn.net/v/t39.30808-6/277307779_321723253282654_9089454335861660638_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=7bbb8a&_nc_ohc=LLjezRyjhF4AX93UOSY&_nc_ht=scontent.fhan14-2.fna&oh=00_AfCJEc7vOZQ34OfCINbI7u46NZNABFhF3eFzdokZ3NBBaw&oe=657B8ABF',
+      'https://kenh14cdn.com/thumb_w/660/203336854389633024/2022/3/28/photo-1-16484498472652092974741.jpg',
     uid: 'a',
     content:
       "It's important to highlight the navigation prop is not passed in to all components; only screen components receive this prop automatically! React Navigation doesn't do any magic here. For example, if you were to define a MyBackButton component and render it as a child of a screen component, you would not be able to access the navigation prop on it. If, however, you wish to access the navigation prop in any of your components, you may use the useNavigation hook.",
@@ -78,7 +78,7 @@ const ChatScreen = () => {
   return (
     <KeyboardAvoidingView
       style={{backgroundColor: colors.bg_dark, flex: 1}}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      behavior={Platform.OS === 'ios' ? 'padding' : -100}>
       <HeaderChat onBackPress={handleBack} />
       {/* body */}
       <FlatList
@@ -124,7 +124,7 @@ const ChatScreen = () => {
       <View
         className="flex-row items-center"
         style={{
-          marginBottom: dimen.height * 0.027,
+          marginBottom: dimen.height * 0.01,
           marginTop: dimen.height * 0.01,
         }}>
         <TextInput

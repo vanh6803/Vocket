@@ -1,6 +1,10 @@
 import {View, TouchableOpacity} from 'react-native';
 import React from 'react';
-import {useCameraDevice, Camera} from 'react-native-vision-camera';
+import {
+  useCameraDevice,
+  Camera,
+  useCameraFormat,
+} from 'react-native-vision-camera';
 import * as IconOutline from 'react-native-heroicons/outline';
 import * as IconSolid from 'react-native-heroicons/solid';
 import {useAppState} from '@react-native-community/hooks';
@@ -21,31 +25,39 @@ export default function RenderCamera({
   const appState = useAppState();
   const isActive = isFocuse || appState === 'active';
 
+  const format = useCameraFormat(device, [
+    {iso: 'max'},
+    {videoHdr: true},
+    {videoResolution: 'max'},
+    {photoAspectRatio: 1 / 1},
+    {photoResolution: 'max'},
+    {pixelFormat: 'native'},
+  ]);
+
   return (
     <View>
-      <View className="rounded-[50px] overflow-hidden m-[2px]">
+      <View
+        className="rounded-[50px] overflow-hidden"
+        style={{width: dimen.width, height: dimen.width}}>
         <Camera
           ref={cameraRef}
-          className="aspect-square"
           device={device}
+          style={{aspectRatio: 1 / 1}}
           isActive={isActive}
-          photo
-          enableZoomGesture
+          photo={true}
           orientation="portrait"
-          focusable={true}
-          resizeMode="cover"
-          photoHdr
+          format={format}
         />
       </View>
       <View
         className="flex flex-row justify-around items-center"
-        style={{marginTop: dimen.height * 0.05}}>
+        style={{marginTop: dimen.height * 0.03}}>
         <CricleButton
           icon={
             flash ? (
-              <IconSolid.BoltIcon color={'white'} size={45} />
+              <IconSolid.BoltIcon color={'white'} size={dimen.width * 0.1} />
             ) : (
-              <IconOutline.BoltIcon color={'white'} size={45} />
+              <IconOutline.BoltIcon color={'white'} size={dimen.width * 0.1} />
             )
           }
           onPress={toggleFlash}
@@ -53,13 +65,16 @@ export default function RenderCamera({
         <TouchableOpacity
           className="rounded-full border-yellow-500 border-2 p-1"
           onPress={takePhoto}>
-          <View className="bg-white w-[70px] h-[70px] rounded-full " />
+          <View
+            className="bg-white  rounded-full "
+            style={{width: dimen.width * 0.2, height: dimen.width * 0.2}}
+          />
         </TouchableOpacity>
         <CricleButton
           icon={
             <IconOutline.ArrowPathIcon
               color={'white'}
-              size={45}
+              size={dimen.width * 0.1}
               onPress={toggleCamera}
             />
           }

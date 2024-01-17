@@ -19,6 +19,7 @@ import FastImage from 'react-native-fast-image';
 import {useNavigation} from '@react-navigation/native';
 import LottieView from 'lottie-react-native';
 import {amins} from './../assets/anims/index';
+import moment from 'moment';
 
 export default function PageContents({goToPage}) {
   const pagerRef = useRef();
@@ -30,7 +31,7 @@ export default function PageContents({goToPage}) {
   const snapPointsShowMore = useMemo(() => ['20%'], []);
 
   const bottomSheetListPosts = useRef(null);
-  const snapPointsListPosts = useMemo(() => ['97%'], []);
+  const snapPointsListPosts = useMemo(() => ['100%'], []);
 
   const data = useSelector(state => state.postReducer.data);
   const dispatch = useDispatch();
@@ -97,8 +98,27 @@ export default function PageContents({goToPage}) {
     setIndexSelected(index);
   });
 
+  function calculateTimeDifference(createAt) {
+    if (createAt) {
+      const currentTime = moment();
+      const createdAt = moment(createAt);
+      const duration = moment.duration(currentTime.diff(createdAt));
+      const days = Math.floor(duration.asDays());
+      const hours = Math.floor(duration.asHours());
+      const minutes = Math.floor(duration.asMinutes());
+
+      if (days > 0) {
+        return `${days}d`;
+      } else if (hours > 0) {
+        return `${hours}h`;
+      } else {
+        return `${minutes}p`;
+      }
+    }
+  }
+
   return (
-    <Pressable style={{height: dimen.height}} onPress={handleCloseBottomSheet}>
+    <Pressable style={{flex: 1}} onPress={handleCloseBottomSheet}>
       {/* TODO: header */}
       <Header
         iconLeft={<IconOutline.ChevronUpIcon color={'white'} size={35} />}
@@ -108,10 +128,10 @@ export default function PageContents({goToPage}) {
         onClickLeft={goToPage}
         oncClickRight={() => {
           bottomSheetShowMoreOptionRef.current.expand();
-        }} //gọi bottom sheet dialog
+        }}
       />
       {/* TODO: body content */}
-      <View className="flex-1  justify-center items-center">
+      <View className="flex-1 justify-center items-center">
         {data?.result.length > 0 ? (
           <PagerView
             ref={pagerRef}
@@ -119,6 +139,7 @@ export default function PageContents({goToPage}) {
             onPageSelected={onPageSelected}
             style={{width: dimen.width, height: '100%'}}>
             {data?.result.map((data, index) => {
+              console.log(data?.user_id.fullName);
               return (
                 <View
                   key={index}
@@ -140,11 +161,11 @@ export default function PageContents({goToPage}) {
                       style={{width: dimen.width, aspectRatio: 1}}
                       className="aspect-square"
                     />
-                    {data.content ? (
+                    {data?.content ? (
                       <Text
                         className="absolute text-white bottom-3 rounded-3xl self-center text-base p-1.5 px-3"
                         style={{backgroundColor: 'rgba(0, 0, 0,0.5)'}}>
-                        {data.content}
+                        {data?.content}
                       </Text>
                     ) : null}
                   </View>
@@ -154,8 +175,10 @@ export default function PageContents({goToPage}) {
                       marginTop: dimen.height * 0.05,
                       backgroundColor: colors.bg_optacity,
                     }}>
-                    <Text className="text-white text-base font-semibold">
-                      {data.user}
+                    <Text className="text-white text-lg font-semibold">
+                      {`${data?.user_id.fullName} ${calculateTimeDifference(
+                        data?.create_at,
+                      )}`}
                     </Text>
                   </View>
                 </View>
@@ -183,6 +206,7 @@ export default function PageContents({goToPage}) {
         className="flex-row items-center justify-between"
         style={{
           marginTop: dimen.height * 0.05,
+          marginBottom: dimen.height * 0.02,
           marginHorizontal: dimen.width * 0.05,
         }}>
         {/* list all posts */}
