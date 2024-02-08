@@ -1,4 +1,11 @@
-import {View, Text, TouchableOpacity, Image} from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from 'react-native';
 import React, {useMemo, useRef, useState} from 'react';
 import * as IconOutline from 'react-native-heroicons/outline';
 import * as IconSolid from 'react-native-heroicons/solid';
@@ -14,6 +21,7 @@ import BottomSheetProfile from '../components/BottomSheetProfile';
 import {useSelector} from 'react-redux';
 import FastImage from 'react-native-fast-image';
 import {BASE_URL, dimen} from '../constants';
+import BottomSheetFriend from '../components/BottomSheetFriend';
 
 export default function PageAction({goToPage, nextChat}) {
   const camera = useRef();
@@ -26,6 +34,9 @@ export default function PageAction({goToPage, nextChat}) {
 
   const bottomSheetRef = useRef(null);
   const snapPoints = useMemo(() => ['100%'], []);
+
+  const bottomSheetFriendRef = useRef(null);
+  const snapPointsFriend = useMemo(() => ['100%'], []);
 
   const handleTakePhoto = async () => {
     const photo = await camera.current.takePhoto({
@@ -96,87 +107,110 @@ export default function PageAction({goToPage, nextChat}) {
   };
 
   return (
-    <View className="flex-1">
-      <Header
-        // iconLeft={<IconSolid.UserCircleIcon color={'white'} size={30} />}
-        iconLeft={
-          profile?.result.avatar != '' ? (
-            <FastImage
-              source={{uri: `${BASE_URL}${profile?.result.avatar}`}}
-              style={{
-                width: dimen.width * 0.07,
-                height: dimen.width * 0.07,
-                borderRadius: (dimen.width * 0.07) / 2,
-              }}
-            />
-          ) : (
-            <IconSolid.UserCircleIcon color={'white'} size={30} />
-          )
-        }
-        iconRight={
-          <IconSolid.ChatBubbleOvalLeftIcon color={'white'} size={30} />
-        }
-        boxChildren={
-          <View
-            style={{
-              padding: dimen.width * 0.025,
-              paddingHorizontal: dimen.width * 0.04,
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <IconSolid.UsersIcon color={'white'} />
-            <View style={{width: dimen.width * 0.01}} />
-            <Text className="text-white font-medium text-base">Friend</Text>
-          </View>
-        }
-        boxStyle={{backgroundColor: 'rgba(80,80,80,0.6)'}}
-        styleButtonLeft={[globals.circleButton]}
-        styleButtonRight={[globals.circleButton]}
-        oncClickRight={nextChat}
-        onClickLeft={() => {
-          bottomSheetRef.current.expand();
-        }}
-      />
-      {!image ? (
-        <RenderCamera
-          takePhoto={handleTakePhoto}
-          cameraRef={camera}
-          toggleCamera={toggleCamera}
-          isFront={isFrontCamera}
-          flash={flash}
-          toggleFlash={toggleFlash}
-        />
-      ) : (
-        <RenderImage
-          image={image}
-          onClickClose={() => {
-            setImage(null);
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={{flex: 1}}>
+      <View className="flex-1">
+        <Header
+          // iconLeft={<IconSolid.UserCircleIcon color={'white'} size={30} />}
+          iconLeft={
+            profile?.result.avatar != '' ? (
+              <FastImage
+                source={{uri: `${BASE_URL}${profile?.result.avatar}`}}
+                style={{
+                  width: dimen.width * 0.07,
+                  height: dimen.width * 0.07,
+                  borderRadius: (dimen.width * 0.07) / 2,
+                }}
+              />
+            ) : (
+              <IconSolid.UserCircleIcon color={'white'} size={30} />
+            )
+          }
+          iconRight={
+            <IconSolid.ChatBubbleOvalLeftIcon color={'white'} size={30} />
+          }
+          boxChildren={
+            <TouchableOpacity
+              onPress={() => {
+                bottomSheetFriendRef.current.expand();
+              }}>
+              <View
+                style={{
+                  padding: dimen.width * 0.025,
+                  paddingHorizontal: dimen.width * 0.04,
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <IconSolid.UsersIcon color={'white'} />
+                <View style={{width: dimen.width * 0.01}} />
+                <Text className="text-white font-medium text-base">Friend</Text>
+              </View>
+            </TouchableOpacity>
+          }
+          boxStyle={{backgroundColor: 'rgba(80,80,80,0.6)'}}
+          styleButtonLeft={[globals.circleButton]}
+          styleButtonRight={[globals.circleButton]}
+          oncClickRight={nextChat}
+          onClickLeft={() => {
+            bottomSheetRef.current.expand();
           }}
-          isFront={isFrontCamera}
-          toggleSaveImage={handleSavePhoto}
         />
-      )}
-      {/* footer */}
-      <TouchableOpacity
-        className="flex-1 justify-center items-center"
-        onPress={goToPage}>
-        <Text className="text-white text-xl font-semibold">History</Text>
-        <IconOutline.ChevronDoubleDownIcon color={'white'} size={40} />
-      </TouchableOpacity>
-      <BottomSheet
-        ref={bottomSheetRef}
-        index={-1}
-        snapPoints={snapPoints}
-        enablePanDownToClose
-        backgroundStyle={{backgroundColor: 'rgba(30,30,30,1)'}}
-        handleIndicatorStyle={{
-          backgroundColor: 'white',
-        }}>
-        <BottomSheetScrollView>
-          <BottomSheetProfile data={profile?.result} />
-        </BottomSheetScrollView>
-      </BottomSheet>
-    </View>
+        {!image ? (
+          <RenderCamera
+            takePhoto={handleTakePhoto}
+            cameraRef={camera}
+            toggleCamera={toggleCamera}
+            isFront={isFrontCamera}
+            flash={flash}
+            toggleFlash={toggleFlash}
+          />
+        ) : (
+          <RenderImage
+            image={image}
+            onClickClose={() => {
+              setImage(null);
+            }}
+            isFront={isFrontCamera}
+            toggleSaveImage={handleSavePhoto}
+          />
+        )}
+        {/* footer */}
+        <TouchableOpacity
+          className="flex-1 justify-center items-center"
+          onPress={goToPage}>
+          <Text className="text-white text-xl font-semibold">History</Text>
+          <IconOutline.ChevronDoubleDownIcon color={'white'} size={40} />
+        </TouchableOpacity>
+        <BottomSheet
+          ref={bottomSheetRef}
+          index={-1}
+          snapPoints={snapPoints}
+          enablePanDownToClose
+          backgroundStyle={{backgroundColor: 'rgba(30,30,30,1)'}}
+          handleIndicatorStyle={{
+            backgroundColor: 'white',
+          }}
+          style={{borderRadius: 50, overflow: 'hidden'}}>
+          <BottomSheetScrollView>
+            <BottomSheetProfile data={profile?.result} />
+          </BottomSheetScrollView>
+        </BottomSheet>
+
+        <BottomSheet
+          ref={bottomSheetFriendRef}
+          index={-1}
+          snapPoints={snapPointsFriend}
+          enablePanDownToClose
+          backgroundStyle={{backgroundColor: 'rgba(30,30,30,1)'}}
+          handleIndicatorStyle={{
+            backgroundColor: 'white',
+          }}
+          style={{borderRadius: 50, overflow: 'hidden'}}>
+          <BottomSheetScrollView>
+            <BottomSheetFriend data={profile?.result} />
+          </BottomSheetScrollView>
+        </BottomSheet>
+      </View>
+    </TouchableWithoutFeedback>
   );
 }

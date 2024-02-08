@@ -27,6 +27,7 @@ export default function RenderImage({
   const [content, setContent] = useState();
   const dispatch = useDispatch();
   const profile = useSelector(state => state.profileReducer.data);
+  const auth = useSelector(state => state.authReducer.data);
   const uri = isFront ? image.uri : `file://${image.path}`;
   const sendPost = () => {
     const formData = new FormData();
@@ -39,6 +40,7 @@ export default function RenderImage({
       formData.append('content', content);
     }
     console.log(formData);
+    console.log(auth);
     axios
       .post(`${BASE_URL}api/posts`, formData, {
         headers: {

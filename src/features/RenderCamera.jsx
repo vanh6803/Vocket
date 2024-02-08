@@ -19,6 +19,7 @@ export default function RenderCamera({
   isFront,
   flash,
   toggleFlash,
+  
 }) {
   const device = useCameraDevice(isFront ? 'front' : 'back'); // Chọn camera dựa trên trạng thái
   const isFocuse = useIsFocused();

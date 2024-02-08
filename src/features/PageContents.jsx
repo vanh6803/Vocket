@@ -111,8 +111,10 @@ export default function PageContents({goToPage}) {
         return `${days}d`;
       } else if (hours > 0) {
         return `${hours}h`;
-      } else {
+      } else if (minutes > 0) {
         return `${minutes}p`;
+      } else {
+        return 'Just now';
       }
     }
   }
@@ -250,10 +252,11 @@ export default function PageContents({goToPage}) {
         index={-1}
         snapPoints={snapPointsListPosts}
         enablePanDownToClose
-        backgroundStyle={{backgroundColor: colors.bg_4C}}
+        backgroundStyle={{backgroundColor: 'rgba(30,30,30,1)'}}
         handleIndicatorStyle={{
           backgroundColor: 'white',
-        }}>
+        }}
+        style={{borderRadius: 50, overflow: 'hidden'}}>
         <BottomSheetListPosts data={data} onClickItem={handleItemList} />
       </BottomSheet>
 

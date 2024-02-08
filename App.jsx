@@ -10,7 +10,6 @@ import {
 import {colors} from './src/assets/Colors';
 import {Provider} from 'react-redux';
 import store from './src/redux/store';
-import {dimen} from './src/constants';
 
 const App = () => {
   useEffect(() => {
