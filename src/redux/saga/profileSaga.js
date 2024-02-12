@@ -7,14 +7,14 @@ import {FETCH_PROFILE_REQUEST} from '../KeyConstant';
 function* fetchProfile(action) {
   try {
     const token = action.payload.token;
-    console.log(token);
+    // console.log(token);
 
     const response = yield call(() =>
       axios.get(`${BASE_URL}api/user/detail`, {
         headers: {Authorization: `Bearer ${token}`},
       }),
     );
-    console.log(response.data);
+    // console.log(response.data);
     yield put(fetchProfileSuccess(response.data));
   } catch (error) {
     if (error.response) {

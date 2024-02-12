@@ -5,7 +5,7 @@ import {
 } from '../KeyConstant';
 
 export const fetchProfileRequest = token => {
-  console.log(`fetchProfileRequest - ${token}`);
+  // console.log(`fetchProfileRequest - ${token}`);
   return {
     type: FETCH_PROFILE_REQUEST,
     payload: { token },
@@ -13,7 +13,7 @@ export const fetchProfileRequest = token => {
 };
 
 export const fetchProfileSuccess = data => {
-  console.log(`fetchProfileSuccess - ${data}`);
+  // console.log(`fetchProfileSuccess - ${data}`);
   return {
     type: FETCH_PROFILE_SUCCESS,
     payload: data,
@@ -21,7 +21,7 @@ export const fetchProfileSuccess = data => {
 };
 
 export const fetchProfileFail = error => {
-  console.log(`fetchProfileFail - ${error}`);
+  // console.log(`fetchProfileFail - ${error}`);
   return {
     type: FETCH_PROFILE_FAIL,
     payload: error,

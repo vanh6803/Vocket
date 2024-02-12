@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -17,6 +17,8 @@ import {dimen} from './../constants/index';
 import FastImage from 'react-native-fast-image';
 import CricleButton from './CricleButton';
 import {globals} from '../styles/Global';
+import {useSelector} from 'react-redux';
+import {shortenName} from '../utils/ConvertName';
 
 const fakeFriends = [
   {
@@ -52,14 +54,22 @@ const fakeFriends = [
 ];
 
 const BottomSheetFriend = ({data}) => {
+  const suggestionFriends = useSelector(
+    state => state.suggestionFriendsReducer.data,
+  );
+
+  useEffect(() => {
+    console.log(suggestionFriends);
+  }, []);
+
   const [showAll, setShowAll] = useState(false);
   const [showAllSuggestionFriends, setShowAllSuggestionFriends] =
     useState(false);
 
   const displayedData = showAll ? fakeFriends : fakeFriends.slice(0, 3);
-  const suggestionFriends = showAllSuggestionFriends
-    ? fakeFriends
-    : fakeFriends.slice(0, 3);
+  const displaysuggestionFriends = showAllSuggestionFriends
+    ? suggestionFriends?.results
+    : suggestionFriends?.results.slice(0, 3);
 
   const toggleShowAll = () => {
     setShowAll(!showAll);
@@ -234,7 +244,7 @@ const BottomSheetFriend = ({data}) => {
             <Text style={styles.title}>Suggestions</Text>
           </View>
           <FlatList
-            data={suggestionFriends}
+            data={displaysuggestionFriends}
             style={{marginTop: dimen.width * 0.03}}
             scrollEnabled={false}
             keyExtractor={(item, index) => index.toString()}
@@ -255,14 +265,33 @@ const BottomSheetFriend = ({data}) => {
                       padding: 1.5,
                       borderRadius: dimen.width * 0.1,
                     }}>
-                    <FastImage
-                      source={{uri: item.avatar}}
+                    <View
                       style={{
                         width: dimen.width * 0.1,
                         height: dimen.width * 0.1,
-                        borderRadius: dimen.width * 0.05,
-                      }}
-                    />
+                        justifyContent: 'center',
+                        alignContent: 'center',
+                      }}>
+                      {item?.avatar != '' ? (
+                        <FastImage
+                          source={{
+                            uri: `${BASE_URL}${item?.avatar}`,
+                          }}
+                          style={{
+                            aspectRatio: 1,
+                          }}
+                          className="rounded-full"
+                        />
+                      ) : (
+                        <View
+                          style={{backgroundColor: colors.bg_optacity, flex: 1}}
+                          className="rounded-full justify-center items-center">
+                          <Text className="text-white font-extrabold">
+                            {shortenName(item?.fullName)}
+                          </Text>
+                        </View>
+                      )}
+                    </View>
                   </View>
                   <Text
                     style={{
@@ -271,7 +300,7 @@ const BottomSheetFriend = ({data}) => {
                       fontSize: dimen.width * 0.04,
                       marginLeft: dimen.width * 0.03,
                     }}>
-                    {item.name}
+                    {item.fullName}
                   </Text>
                   <TouchableOpacity
                     style={{
@@ -293,21 +322,22 @@ const BottomSheetFriend = ({data}) => {
             }}
           />
         </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
+        {suggestionFriends?.results?.length > 3 && (
           <View
             style={{
-              flex: 1,
-              backgroundColor: colors.bg_optacity,
-              height: 2,
-              marginHorizontal: dimen.width * 0.05,
-            }}
-          />
-          {fakeFriends.length > 3 && (
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <View
+              style={{
+                flex: 1,
+                backgroundColor: colors.bg_optacity,
+                height: 2,
+                marginHorizontal: dimen.width * 0.05,
+              }}
+            />
+
             <TouchableOpacity
               onPress={toggleShowAllSuggestionFriends}
               style={{
@@ -322,19 +352,20 @@ const BottomSheetFriend = ({data}) => {
                   fontWeight: 'bold',
                   alignSelf: 'center',
                 }}>
-                {showAll ? 'Show Less' : 'Show More'}
+                {showAllSuggestionFriends ? 'Show Less' : 'Show More'}
               </Text>
             </TouchableOpacity>
-          )}
-          <View
-            style={{
-              flex: 1,
-              backgroundColor: colors.bg_optacity,
-              height: 2,
-              marginHorizontal: dimen.width * 0.05,
-            }}
-          />
-        </View>
+
+            <View
+              style={{
+                flex: 1,
+                backgroundColor: colors.bg_optacity,
+                height: 2,
+                marginHorizontal: dimen.width * 0.05,
+              }}
+            />
+          </View>
+        )}
       </View>
     </TouchableWithoutFeedback>
   );

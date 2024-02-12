@@ -9,6 +9,7 @@ import PageAction from '../features/PageAction';
 import PageContents from '../features/PageContents';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {fetchProfileRequest} from './../redux/action/Profile';
+import {fetchSuggestionFriendsRequest} from '../redux/action/SuggestionFriends';
 
 export default function Main() {
   const navigation = useNavigation();
@@ -23,6 +24,9 @@ export default function Main() {
 
   useEffect(() => {
     dispatch(fetchProfileRequest(token));
+  }, []);
+  useEffect(() => {
+    dispatch(fetchSuggestionFriendsRequest(token));
   }, []);
 
   return (

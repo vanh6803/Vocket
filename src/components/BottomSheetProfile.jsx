@@ -20,7 +20,6 @@ const BottomSheetProfile = ({data}) => {
   const dispatch = useDispatch();
 
   const logout = async () => {
-    console.log('a');
     const token = await AsyncStorage.getItem('token');
     if (token) {
       axios
