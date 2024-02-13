@@ -39,8 +39,6 @@ export default function RenderImage({
     if (content) {
       formData.append('content', content);
     }
-    console.log(formData);
-    console.log(auth);
     axios
       .post(`${BASE_URL}api/posts`, formData, {
         headers: {
@@ -49,7 +47,6 @@ export default function RenderImage({
         },
       })
       .then(response => {
-        console.log(response.data);
         onClickClose();
         dispatch(fetchPostRequest());
         Snackbar.show({

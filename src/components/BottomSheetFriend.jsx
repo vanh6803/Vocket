@@ -58,10 +58,6 @@ const BottomSheetFriend = ({data}) => {
     state => state.suggestionFriendsReducer.data,
   );
 
-  useEffect(() => {
-    console.log(suggestionFriends);
-  }, []);
-
   const [showAll, setShowAll] = useState(false);
   const [showAllSuggestionFriends, setShowAllSuggestionFriends] =
     useState(false);

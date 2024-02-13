@@ -10,7 +10,6 @@ import {
 function* fetchSuggestionFriends(action) {
   try {
     const token = action.payload.token;
-
     const response = yield call(() =>
       axios.get(`${BASE_URL}api/friend/suggest-friends`, {
         headers: {Authorization: `Bearer ${token}`},

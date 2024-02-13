@@ -27,7 +27,6 @@ export default function RootNavigation() {
 
   useEffect(() => {
     AsyncStorage.getItem('token').then(token => {
-      console.log(token);
       dispatch(restoreToken(token));
     });
   }, [dispatch]);

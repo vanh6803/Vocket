@@ -20,6 +20,8 @@ import {useNavigation} from '@react-navigation/native';
 import LottieView from 'lottie-react-native';
 import {amins} from './../assets/anims/index';
 import moment from 'moment';
+import {CameraRoll} from '@react-native-camera-roll/camera-roll';
+import RNFetchBlob from 'rn-fetch-blob';
 
 export default function PageContents({goToPage}) {
   const pagerRef = useRef();
@@ -38,9 +40,7 @@ export default function PageContents({goToPage}) {
   const navigation = useNavigation();
 
   useEffect(() => {
-    // Check if the pagerRef has been initialized
     if (pagerRef.current) {
-      // Set the page based on the position prop
       pagerRef.current.setPage(indexSelected);
     }
   }, [indexSelected]);
@@ -52,7 +52,6 @@ export default function PageContents({goToPage}) {
 
   const ConfirmDeletePhoto = () => {
     console.log(itemSelected);
-    // show confirm dialog
     setIsShowConfirmDialog(true);
     handleCloseBottomSheet();
   };
@@ -83,6 +82,49 @@ export default function PageContents({goToPage}) {
 
   const handleDowloadImage = () => {
     console.log(`${BASE_URL}${itemSelected?.image}`);
+    const {config, fs} = RNFetchBlob;
+    let fakeUri = `${BASE_URL}${itemSelected?.image}`;
+    console.log(config);
+    console.log(fs.dirs.PictureDir);
+    let pictureDir = fs.dirs.PictureDir;
+    let ext = getExtention(fakeUri);
+    ext = '.' + ext[0];
+    let date = new Date();
+    let options = {
+      fileCache: true,
+      addAndroidDownloads: {
+        useDownloadManager: true,
+        notification: true,
+        path:
+          pictureDir +
+          '/image_' +
+          Math.floor(date.getTime() + date.getSeconds() / 2) +
+          ext,
+        description: 'Image',
+      },
+    };
+    config(options)
+      .fetch('GET', fakeUri)
+      .then(res => {
+        console.log(res);
+        Snackbar.show({
+          text: 'save photo successfully',
+          duration: Snackbar.LENGTH_SHORT,
+        });
+        bottomSheetShowMoreOptionRef.current.close();
+      })
+      .catch(err => {
+        console.log(err);
+        Snackbar.show({
+          text: 'save photo failed',
+          duration: Snackbar.LENGTH_SHORT,
+          backgroundColor: 'red',
+        });
+      });
+  };
+
+  const getExtention = fileName => {
+    return /[.]/.exec(fileName) ? /[^.]+$/.exec(fileName) : undefined;
   };
 
   // close bottom sheet
@@ -141,7 +183,6 @@ export default function PageContents({goToPage}) {
             onPageSelected={onPageSelected}
             style={{width: dimen.width, height: '100%'}}>
             {data?.result.map((data, index) => {
-              console.log(data?.user_id.fullName);
               return (
                 <View
                   key={index}
