@@ -19,6 +19,7 @@ import CricleButton from './CricleButton';
 import {globals} from '../styles/Global';
 import {useSelector} from 'react-redux';
 import {shortenName} from '../utils/ConvertName';
+import Avatar from './Avatar';
 
 const fakeFriends = [
   {
@@ -254,41 +255,10 @@ const BottomSheetFriend = ({data}) => {
                       marginVertical: dimen.width * 0.015,
                     },
                   ]}>
-                  <View
-                    style={{
-                      borderWidth: 1.5,
-                      borderColor: colors.primary,
-                      padding: 1.5,
-                      borderRadius: dimen.width * 0.1,
-                    }}>
-                    <View
-                      style={{
-                        width: dimen.width * 0.1,
-                        height: dimen.width * 0.1,
-                        justifyContent: 'center',
-                        alignContent: 'center',
-                      }}>
-                      {item?.avatar != '' ? (
-                        <FastImage
-                          source={{
-                            uri: `${BASE_URL}${item?.avatar}`,
-                          }}
-                          style={{
-                            aspectRatio: 1,
-                          }}
-                          className="rounded-full"
-                        />
-                      ) : (
-                        <View
-                          style={{backgroundColor: colors.bg_optacity, flex: 1}}
-                          className="rounded-full justify-center items-center">
-                          <Text className="text-white font-extrabold">
-                            {shortenName(item?.fullName)}
-                          </Text>
-                        </View>
-                      )}
-                    </View>
-                  </View>
+                  <Avatar
+                    uri={item?.avatar}
+                    name={shortenName(item?.fullName)}
+                  />
                   <Text
                     style={{
                       color: 'white',

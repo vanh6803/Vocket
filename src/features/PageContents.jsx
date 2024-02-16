@@ -83,28 +83,25 @@ export default function PageContents({goToPage}) {
   const handleDowloadImage = () => {
     console.log(`${BASE_URL}${itemSelected?.image}`);
     const {config, fs} = RNFetchBlob;
-    let fakeUri = `${BASE_URL}${itemSelected?.image}`;
-    console.log(config);
-    console.log(fs.dirs.PictureDir);
-    let pictureDir = fs.dirs.PictureDir;
-    let ext = getExtention(fakeUri);
-    ext = '.' + ext[0];
+    let uri = `${BASE_URL}${itemSelected?.image}`;
     let date = new Date();
+    let path =
+      '/storage/emulated/0/Pictures/' +
+      '/image_' +
+      Math.floor(date.getTime() + date.getSeconds() / 2) +
+      ext;
+    let ext = getExtention(uri);
+    ext = '.' + ext[0];
     let options = {
       fileCache: true,
       addAndroidDownloads: {
         useDownloadManager: true,
-        notification: true,
-        path:
-          pictureDir +
-          '/image_' +
-          Math.floor(date.getTime() + date.getSeconds() / 2) +
-          ext,
+        path: path,
         description: 'Image',
       },
     };
     config(options)
-      .fetch('GET', fakeUri)
+      .fetch('GET', uri)
       .then(res => {
         console.log(res);
         Snackbar.show({
