@@ -1,14 +1,17 @@
-import React from 'react';
-import {View, StyleSheet, FlatList, TouchableOpacity} from 'react-native';
+import React, {useState} from 'react';
+import {View, StyleSheet, FlatList, TouchableOpacity, Text} from 'react-native';
 import {dimen} from '../constants';
 import {colors} from '../assets/Colors';
 
-const BoxContentFriendsBottomSheet = (title, icon, data, renderItem) => {
+const BoxContentFriendsBottomSheet = ({title, icon, data, renderItem}) => {
   const [isShowMore, setIsShowMore] = useState(false);
-  const subData = isShowMore ? data : data.slice(0, 3);
+  const subData = isShowMore ? data : data?.slice(0, 3);
   const toggleShowMore = () => {
     setIsShowMore(!isShowMore);
   };
+  if (!data) {
+    return;
+  }
   return (
     <View style={styles.boxContainer}>
       <View style={styles.titleContainer}>
@@ -22,9 +25,9 @@ const BoxContentFriendsBottomSheet = (title, icon, data, renderItem) => {
         keyExtractor={(item, index) => index.toString()}
         renderItem={renderItem}
       />
-      {data.lenght > 3 && (
+      {data?.length > 3 ? (
         <View style={styles.showMoreContainer}>
-          <View style={[styles.line]} />
+          <View style={[styles.line, {marginRight: dimen.width * 0.03}]} />
           <TouchableOpacity
             onPress={toggleShowMore}
             style={styles.buttonShowMore}>
@@ -32,9 +35,9 @@ const BoxContentFriendsBottomSheet = (title, icon, data, renderItem) => {
               {isShowMore ? 'Show Less' : 'Show More'}
             </Text>
           </TouchableOpacity>
-          <View style={styles.line} />
+          <View style={[styles.line, {marginLeft: dimen.width * 0.03}]} />
         </View>
-      )}
+      ) : null}
     </View>
   );
 };
@@ -52,7 +55,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     marginLeft: 10,
-    fontWeight: '700',
+    fontWeight: '600',
   },
   showMoreContainer: {
     flexDirection: 'row',
@@ -63,7 +66,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.bg_optacity,
     height: 2,
-    marginHorizontal: dimen.width * 0.05,
   },
   textButtonShowMore: {
     color: 'white',

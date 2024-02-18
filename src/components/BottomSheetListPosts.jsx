@@ -1,4 +1,4 @@
-import {FlatList, Image, TouchableOpacity, View} from 'react-native';
+import {FlatList, TouchableOpacity, View} from 'react-native';
 import {BASE_URL} from '../constants';
 import FastImage from 'react-native-fast-image';
 

@@ -6,12 +6,13 @@ import {
   fetchSuggestionFriendsFail,
   fetchSuggestionFriendsSuccess,
 } from '../action/SuggestionFriends';
+import {API_SUGGEST_FRIENDS} from '../../api';
 
 function* fetchSuggestionFriends(action) {
   try {
     const token = action.payload.token;
     const response = yield call(() =>
-      axios.get(`${BASE_URL}api/friend/suggest-friends`, {
+      axios.get(API_SUGGEST_FRIENDS, {
         headers: {Authorization: `Bearer ${token}`},
       }),
     );

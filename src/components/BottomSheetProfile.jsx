@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, StyleSheet, Image, Text, ScrollView} from 'react-native';
+import {View, StyleSheet, Text} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {BASE_URL, dimen} from '../constants';
 import * as IconSolid from 'react-native-heroicons/solid';
@@ -11,7 +11,7 @@ import BoxContainer from './BoxContainer';
 import ButtonOption from './ButtonOption';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {StackActions, useNavigation} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import {useDispatch} from 'react-redux';
 import {signOut} from '../redux/action/Auth';
 
