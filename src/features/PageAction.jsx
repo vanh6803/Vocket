@@ -17,13 +17,16 @@ import RenderImage from './RenderImage';
 import {globals} from '../styles/Global';
 import Header from '../components/Header';
 import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
-import BottomSheetProfile from '../components/BottomSheetProfile';
 import {useSelector} from 'react-redux';
 import FastImage from 'react-native-fast-image';
 import {BASE_URL, dimen} from '../constants';
-import BottomSheetFriend from '../components/BottomSheetFriend';
 
-export default function PageAction({goToPage, nextChat}) {
+export default function PageAction({
+  goToPage,
+  nextChat,
+  openProfile,
+  openFriend,
+}) {
   const camera = useRef();
   const [image, setImage] = useState();
 
@@ -31,12 +34,6 @@ export default function PageAction({goToPage, nextChat}) {
 
   const [isFrontCamera, setIsFrontCamera] = useState(true);
   const [flash, setFlash] = useState(false);
-
-  const bottomSheetRef = useRef(null);
-  const snapPoints = useMemo(() => ['100%'], []);
-
-  const bottomSheetFriendRef = useRef(null);
-  const snapPointsFriend = useMemo(() => ['100%'], []);
 
   const handleTakePhoto = async () => {
     const photo = await camera.current.takePhoto({
@@ -110,7 +107,6 @@ export default function PageAction({goToPage, nextChat}) {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={{flex: 1}}>
       <View className="flex-1">
         <Header
-          // iconLeft={<IconSolid.UserCircleIcon color={'white'} size={30} />}
           iconLeft={
             profile?.result.avatar != '' ? (
               <FastImage
@@ -129,10 +125,7 @@ export default function PageAction({goToPage, nextChat}) {
             <IconSolid.ChatBubbleOvalLeftIcon color={'white'} size={30} />
           }
           boxChildren={
-            <TouchableOpacity
-              onPress={() => {
-                bottomSheetFriendRef.current.expand();
-              }}>
+            <TouchableOpacity onPress={openFriend}>
               <View
                 style={{
                   padding: dimen.width * 0.025,
@@ -143,7 +136,11 @@ export default function PageAction({goToPage, nextChat}) {
                 }}>
                 <IconSolid.UsersIcon color={'white'} />
                 <View style={{width: dimen.width * 0.01}} />
-                <Text className="text-white font-medium text-base">Friend</Text>
+                <Text className="text-white font-medium text-base">
+                  {profile?.result.Friends?.length == 0
+                    ? 'Friends'
+                    : 'No Friends'}
+                </Text>
               </View>
             </TouchableOpacity>
           }
@@ -151,9 +148,7 @@ export default function PageAction({goToPage, nextChat}) {
           styleButtonLeft={[globals.circleButton]}
           styleButtonRight={[globals.circleButton]}
           oncClickRight={nextChat}
-          onClickLeft={() => {
-            bottomSheetRef.current.expand();
-          }}
+          onClickLeft={openProfile}
         />
         {!image ? (
           <RenderCamera
@@ -181,35 +176,6 @@ export default function PageAction({goToPage, nextChat}) {
           <Text className="text-white text-xl font-semibold">History</Text>
           <IconOutline.ChevronDoubleDownIcon color={'white'} size={40} />
         </TouchableOpacity>
-        <BottomSheet
-          ref={bottomSheetRef}
-          index={-1}
-          snapPoints={snapPoints}
-          enablePanDownToClose
-          backgroundStyle={{backgroundColor: 'rgba(30,30,30,1)'}}
-          handleIndicatorStyle={{
-            backgroundColor: 'white',
-          }}
-          style={{borderRadius: 50, overflow: 'hidden'}}>
-          <BottomSheetScrollView>
-            <BottomSheetProfile data={profile?.result} />
-          </BottomSheetScrollView>
-        </BottomSheet>
-
-        <BottomSheet
-          ref={bottomSheetFriendRef}
-          index={-1}
-          snapPoints={snapPointsFriend}
-          enablePanDownToClose
-          backgroundStyle={{backgroundColor: 'rgba(30,30,30,1)'}}
-          handleIndicatorStyle={{
-            backgroundColor: 'white',
-          }}
-          style={{borderRadius: 50, overflow: 'hidden'}}>
-          <BottomSheetScrollView>
-            <BottomSheetFriend data={profile?.result} />
-          </BottomSheetScrollView>
-        </BottomSheet>
       </View>
     </TouchableWithoutFeedback>
   );

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   View,
   StyleSheet,
@@ -19,11 +19,16 @@ import {useSelector} from 'react-redux';
 import {shortenName} from '../utils/ConvertName';
 import Avatar from './Avatar';
 import BoxContentFriendsBottomSheet from './BoxContentFriendsBottomSheet';
+import SearchBar from './SearchBar';
 
 const BottomSheetFriend = ({profile}) => {
   const suggestionFriends = useSelector(
     state => state.suggestionFriendsReducer.data,
   );
+
+  const handleAccecptFriend = () => {};
+  const handleRemoveFriend = () => {};
+  const handleAddNewFriend = () => {};
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -38,40 +43,7 @@ const BottomSheetFriend = ({profile}) => {
           Your Friends
         </Text>
 
-        {/* search */}
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            borderRadius: dimen.width * 0.02,
-            backgroundColor: colors.bg_4C,
-            margin: dimen.width * 0.03,
-            padding: dimen.width * 0.015,
-            paddingHorizontal: dimen.width * 0.02,
-          }}>
-          <IconOutline.MagnifyingGlassIcon color={'white'} />
-          <TextInput
-            placeholder="Search and add friends"
-            placeholderTextColor={'gray'}
-            style={{
-              color: 'white',
-              flex: 1,
-              fontSize: dimen.width * 0.04,
-              padding: dimen.width * 0.02,
-            }}
-          />
-          <TouchableOpacity>
-            <Text
-              style={{
-                color: 'white',
-                fontSize: dimen.width * 0.04,
-                fontWeight: 'bold',
-                alignSelf: 'center',
-              }}>
-              Cancel
-            </Text>
-          </TouchableOpacity>
-        </View>
+        <SearchBar searchData={suggestionFriends?.results} />
 
         {/* your friends */}
         <BoxContentFriendsBottomSheet
@@ -99,9 +71,51 @@ const BottomSheetFriend = ({profile}) => {
                   {item.fullName}
                 </Text>
                 <CricleButton
+                  onPress={handleRemoveFriend}
                   styleButton={globals.circleButton}
                   icon={<IconSolid.XMarkIcon color={'white'} size={20} />}
                 />
+              </View>
+            );
+          }}
+        />
+
+        {/* Friend requests */}
+        <BoxContentFriendsBottomSheet
+          title={'Friend requests'}
+          icon={
+            <View
+              style={{backgroundColor: 'gray', padding: 3}}
+              className="rounded-full justify-center items-center">
+              <IconSolid.UsersIcon color={colors.bg_dark} size={20} />
+            </View>
+          }
+          data={profile?.freindRequests}
+          renderItem={({item, index}) => {
+            return (
+              <View
+                style={[
+                  {
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginVertical: dimen.width * 0.015,
+                  },
+                ]}>
+                <Avatar uri={item?.avatar} name={shortenName(item?.fullName)} />
+                <Text
+                  style={{
+                    color: 'white',
+                    flex: 1,
+                    fontSize: dimen.width * 0.04,
+                    marginLeft: dimen.width * 0.03,
+                  }}>
+                  {item.fullName}
+                </Text>
+                <TouchableOpacity
+                  onPress={handleAccecptFriend}
+                  style={styles.buttonItem}>
+                  <Text style={styles.textButtonItem}>✓ Accept</Text>
+                </TouchableOpacity>
               </View>
             );
           }}
@@ -133,19 +147,9 @@ const BottomSheetFriend = ({profile}) => {
                   {item.fullName}
                 </Text>
                 <TouchableOpacity
-                  style={{
-                    backgroundColor: colors.primary,
-                    padding: dimen.width * 0.02,
-                    borderRadius: dimen.width * 0.02,
-                  }}>
-                  <Text
-                    style={{
-                      color: colors.bg_dark,
-                      fontSize: 16,
-                      fontWeight: '600',
-                    }}>
-                    Add +
-                  </Text>
+                  onPress={handleAddNewFriend}
+                  style={styles.buttonItem}>
+                  <Text style={styles.textButtonItem}>Add +</Text>
                 </TouchableOpacity>
               </View>
             );
@@ -156,6 +160,17 @@ const BottomSheetFriend = ({profile}) => {
   );
 };
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  buttonItem: {
+    backgroundColor: colors.primary,
+    padding: dimen.width * 0.02,
+    borderRadius: dimen.width * 0.02,
+  },
+  textButtonItem: {
+    color: colors.bg_dark,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});
 
 export default BottomSheetFriend;

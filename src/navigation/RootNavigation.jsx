@@ -15,8 +15,8 @@ import ChatScreen from '../screens/ChatScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useDispatch, useSelector} from 'react-redux';
 import {restoreToken} from '../redux/action/Auth';
-import {icons} from '../assets/icons';
-import {dimen} from '../constants';
+import ProfileScreen from '../screens/ProfileScreen';
+import FriendScreen from '../screens/FriendScreen';
 
 const Stack = createStackNavigator();
 
@@ -68,6 +68,32 @@ export default function RootNavigation() {
               name="Main"
               component={Main}
               options={{gestureEnabled: false}}
+            />
+            <Stack.Screen
+              name="profile"
+              component={ProfileScreen}
+              options={{
+                transitionSpec: {
+                  open: TransitionSpecs.TransitionIOSSpec,
+                  close: TransitionSpecs.TransitionIOSSpec,
+                },
+                cardStyleInterpolator:
+                  CardStyleInterpolators.forModalPresentationIOS,
+                gestureDirection: 'vertical',
+              }}
+            />
+            <Stack.Screen
+              name="friend"
+              component={FriendScreen}
+              options={{
+                transitionSpec: {
+                  open: TransitionSpecs.TransitionIOSSpec,
+                  close: TransitionSpecs.TransitionIOSSpec,
+                },
+                cardStyleInterpolator:
+                  CardStyleInterpolators.forModalPresentationIOS,
+                gestureDirection: 'vertical',
+              }}
             />
             <Stack.Screen
               name="chatContainer"

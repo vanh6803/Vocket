@@ -3,13 +3,14 @@ import {View, StyleSheet, FlatList, TouchableOpacity, Text} from 'react-native';
 import {dimen} from '../constants';
 import {colors} from '../assets/Colors';
 
-const BoxContentFriendsBottomSheet = ({title, icon, data, renderItem}) => {
+const BoxContentFriends = ({title, icon, data, renderItem}) => {
   const [isShowMore, setIsShowMore] = useState(false);
   const subData = isShowMore ? data : data?.slice(0, 3);
   const toggleShowMore = () => {
     setIsShowMore(!isShowMore);
   };
-  if (!data) {
+
+  if (!data || data.length == 0) {
     return;
   }
   return (
@@ -80,4 +81,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BoxContentFriendsBottomSheet;
+export default BoxContentFriends;

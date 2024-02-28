@@ -1,4 +1,4 @@
-import {View, StatusBar, SafeAreaView} from 'react-native';
+import {View, StatusBar, SafeAreaView, Image} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {colors} from '../assets/Colors';
@@ -48,6 +48,12 @@ export default function Main() {
             }}
             nextChat={() => {
               navigation.navigate('chatContainer');
+            }}
+            openProfile={() => {
+              navigation.navigate('profile');
+            }}
+            openFriend={() => {
+              navigation.navigate('friend');
             }}
           />
           <PageContents
