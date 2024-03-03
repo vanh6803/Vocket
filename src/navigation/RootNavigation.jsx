@@ -93,6 +93,7 @@ export default function RootNavigation() {
                 cardStyleInterpolator:
                   CardStyleInterpolators.forModalPresentationIOS,
                 gestureDirection: 'vertical',
+                keyboardHandlingEnabled: true,
               }}
             />
             <Stack.Screen

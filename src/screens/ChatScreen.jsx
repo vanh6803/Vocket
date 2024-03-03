@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -6,6 +6,7 @@ import {
   FlatList,
   TextInput,
   KeyboardAvoidingView,
+  Keyboard,
 } from 'react-native';
 import {colors} from '../assets/Colors';
 import * as IconOutline from 'react-native-heroicons/outline';
@@ -14,6 +15,7 @@ import {dimen} from '../constants';
 import FastImage from 'react-native-fast-image';
 import HeaderChat from '../components/headerChat';
 import {useNavigation} from '@react-navigation/native';
+import {AvoidSoftInput} from 'react-native-avoid-softinput';
 
 const data = [
   {
@@ -71,14 +73,34 @@ const data = [
 const ChatScreen = () => {
   const navigation = useNavigation();
 
+  const [keyboardShow, setKeyboardShow] = useState(false);
+
+  useEffect(() => {
+    AvoidSoftInput.setAdjustResize();
+  }, []);
+
   const handleBack = () => {
     navigation.goBack();
   };
 
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
+      setKeyboardShow(true);
+    });
+    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+      setKeyboardShow(false);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
   return (
     <KeyboardAvoidingView
       style={{backgroundColor: colors.bg_dark, flex: 1}}
-      behavior={Platform.OS === 'ios' ? 'padding' : -100}>
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <HeaderChat onBackPress={handleBack} />
       {/* body */}
       <FlatList
@@ -124,7 +146,9 @@ const ChatScreen = () => {
       <View
         className="flex-row items-center"
         style={{
-          marginBottom: dimen.height * 0.01,
+          marginBottom: keyboardShow
+            ? dimen.height * 0.04
+            : dimen.height * 0.01,
           marginTop: dimen.height * 0.01,
         }}>
         <TextInput
