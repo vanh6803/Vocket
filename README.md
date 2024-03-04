@@ -43,12 +43,6 @@ minSdkVersion 21
 yarn android
 ```
 
-#### IOS
-
-```bash
-yarn ios
-```
-
 #### Or
 
 ```bash
