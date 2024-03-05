@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -9,60 +9,78 @@ import {
   ScrollView,
   TextInput,
   FlatList,
-  KeyboardAvoidingView,
+  ActivityIndicator,
 } from 'react-native';
 import * as IconOutline from 'react-native-heroicons/outline';
 import * as IconSolid from 'react-native-heroicons/solid';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {useSelector} from 'react-redux';
 import {dimen} from '../constants';
-import SearchBar from '../components/SearchBar';
 import BoxContentFriends from '../components/BoxContentFriendsBottomSheet';
 import CricleButton from '../components/CricleButton';
 import Avatar from '../components/Avatar';
 import {shortenName} from '../utils/ConvertName';
 import {colors} from '../assets/Colors';
 import {globals} from '../styles/Global';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withRepeat,
-} from 'react-native-reanimated';
 import {useNavigation} from '@react-navigation/native';
 import {AvoidSoftInput} from 'react-native-avoid-softinput';
+import axios from 'axios';
+import {API_SEARCH_FRIENDS} from '../api';
 
 const FriendScreen = () => {
+  const [isShowSuggestSearch, setIsShowSuggestSearch] = useState(false);
+  const [isLoadingSearch, setIsLoadingSearch] = useState(false);
+  const [dataSearch, setDataSearch] = useState(null);
+  const [searchValue, setSearchValue] = useState('');
+  const [debouncedText, setDebouncedText] = useState('');
   const profile = useSelector(state => state.profileReducer.data);
   const suggestionFriends = useSelector(
     state => state.suggestionFriendsReducer.data,
   );
-
   const navigation = useNavigation();
 
-  const [keyboardShow, setKeyboardShow] = useState(false);
+  const inputSearchRef = useRef(null);
 
   useEffect(() => {
     AvoidSoftInput.setAdjustPan();
   }, []);
 
   useEffect(() => {
-    const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
-      setKeyboardShow(true);
-    });
-    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
-      setKeyboardShow(false);
-    });
+    const delaySearch = setTimeout(() => {
+      handleSearchedFriend(debouncedText);
+    }, 500);
 
-    return () => {
-      showSubscription.remove();
-      hideSubscription.remove();
-    };
-  }, []);
+    return () => clearTimeout(delaySearch);
+  }, [debouncedText]);
 
   const handleAccecptFriend = () => {};
   const handleRemoveFriend = () => {};
   const handleAddNewFriend = () => {};
+  const handleSearchedFriend = async text => {
+    try {
+      setIsLoadingSearch(true);
+      const response = await axios.get(
+        `${API_SEARCH_FRIENDS}?searchTerm=${text}`,
+      );
+      console.log(response.data);
+      setDataSearch(response.data);
+    } catch (error) {
+      console.error('Error fetching data: ', error);
+    } finally {
+      setIsLoadingSearch(false);
+    }
+  };
+
+  const handleTextChange = text => {
+    setSearchValue(text);
+    setIsShowSuggestSearch(true);
+    setDebouncedText(text);
+  };
+
+  const handleVisibleSearchSuggest = () => {
+    setIsShowSuggestSearch(false);
+    Keyboard.dismiss();
+  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -83,6 +101,7 @@ const FriendScreen = () => {
         <View style={styles.searchContainer}>
           <IconOutline.MagnifyingGlassIcon color={'white'} />
           <TextInput
+            ref={inputSearchRef}
             placeholder="Search and add friends"
             placeholderTextColor={'gray'}
             style={{
@@ -91,8 +110,10 @@ const FriendScreen = () => {
               fontSize: 16,
               padding: dimen.width * 0.01,
             }}
+            keyboardAppearance="dark"
+            onChangeText={text => handleTextChange(text)}
           />
-          <TouchableOpacity>
+          <TouchableOpacity onPress={handleVisibleSearchSuggest}>
             <Text
               style={{
                 color: 'white',
@@ -229,60 +250,66 @@ const FriendScreen = () => {
           </View>
         </ScrollView>
 
-        <View
-          style={[
-            {
-              width: dimen.width,
-              height: 300,
-              position: 'absolute',
-              top: '14%',
-              padding: 15,
-            },
-          ]}>
+        {isShowSuggestSearch ? (
           <View
-            style={{
-              width: '100%',
-              backgroundColor: 'rgb(40, 40, 40)',
-              borderRadius: 10,
-              padding: 10,
-            }}>
-            <FlatList
-              data={suggestionFriends?.results}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({item, index}) => {
-                return (
-                  <View
-                    style={[
-                      {
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        marginVertical: dimen.width * 0.015,
-                      },
-                    ]}>
-                    <Avatar
-                      uri={item?.avatar}
-                      name={shortenName(item?.fullName)}
-                    />
-                    <Text
-                      style={{
-                        color: 'white',
-                        flex: 1,
-                        fontSize: dimen.width * 0.04,
-                        marginLeft: dimen.width * 0.03,
-                      }}>
-                      {item.fullName}
-                    </Text>
-                    <TouchableOpacity
-                      onPress={handleAddNewFriend}
-                      style={styles.buttonItem}>
-                      <Text style={styles.textButtonItem}>Add +</Text>
-                    </TouchableOpacity>
-                  </View>
-                );
-              }}
-            />
+            style={[
+              {
+                width: dimen.width,
+                height: 300,
+                position: 'absolute',
+                top: '14%',
+                padding: 15,
+              },
+            ]}>
+            <View
+              style={{
+                width: '100%',
+                backgroundColor: 'rgb(40, 40, 40)',
+                borderRadius: 10,
+                padding: 10,
+              }}>
+              {isLoadingSearch ? (
+                <ActivityIndicator color={'white'} />
+              ) : (
+                <FlatList
+                  data={dataSearch?.results}
+                  keyExtractor={(item, index) => index.toString()}
+                  renderItem={({item, index}) => {
+                    return (
+                      <View
+                        style={[
+                          {
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            marginVertical: dimen.width * 0.015,
+                          },
+                        ]}>
+                        <Avatar
+                          uri={item?.avatar}
+                          name={shortenName(item?.fullName)}
+                        />
+                        <Text
+                          style={{
+                            color: 'white',
+                            flex: 1,
+                            fontSize: dimen.width * 0.04,
+                            marginLeft: dimen.width * 0.03,
+                          }}>
+                          {item.fullName}
+                        </Text>
+                        <TouchableOpacity
+                          onPress={handleAddNewFriend}
+                          style={styles.buttonItem}>
+                          <Text style={styles.textButtonItem}>Add +</Text>
+                        </TouchableOpacity>
+                      </View>
+                    );
+                  }}
+                />
+              )}
+            </View>
           </View>
-        </View>
+        ) : null}
       </View>
     </TouchableWithoutFeedback>
   );
