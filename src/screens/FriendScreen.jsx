@@ -80,6 +80,7 @@ const FriendScreen = () => {
   const handleVisibleSearchSuggest = () => {
     setIsShowSuggestSearch(false);
     Keyboard.dismiss();
+    inputSearchRef.current.clear();
   };
 
   return (
@@ -267,11 +268,21 @@ const FriendScreen = () => {
                 backgroundColor: 'rgb(40, 40, 40)',
                 borderRadius: 10,
                 padding: 10,
+                shadowColor: '#BABABA',
+                shadowOffset: {
+                  width: 0,
+                  height: 7,
+                },
+                shadowOpacity: 0.41,
+                shadowRadius: 9.11,
+
+                elevation: 14,
               }}>
               {isLoadingSearch ? (
                 <ActivityIndicator color={'white'} />
               ) : (
                 <FlatList
+                  showsVerticalScrollIndicator={false}
                   data={dataSearch?.results}
                   keyExtractor={(item, index) => index.toString()}
                   renderItem={({item, index}) => {
