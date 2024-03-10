@@ -25,7 +25,7 @@ import {globals} from '../styles/Global';
 import {useNavigation} from '@react-navigation/native';
 import {AvoidSoftInput} from 'react-native-avoid-softinput';
 import axios from 'axios';
-import {API_SEARCH_FRIENDS} from '../api';
+import {API_SEARCH_FRIENDS, API_SEND_FRIENDS_REQUEST} from '../api';
 
 const FriendScreen = () => {
   const [isShowSuggestSearch, setIsShowSuggestSearch] = useState(false);
@@ -55,7 +55,19 @@ const FriendScreen = () => {
 
   const handleAccecptFriend = () => {};
   const handleRemoveFriend = () => {};
-  const handleAddNewFriend = () => {};
+  const handleAddNewFriend = id => {
+    console.log(id);
+    axios
+      .post(
+        `${API_SEND_FRIENDS_REQUEST}`,
+        {friendId: id},
+        {
+          headers: {Authorization: 'Bearer ' + profile?.results.token},
+        },
+      )
+      .then(response => {})
+      .catch(error => {});
+  };
   const handleSearchedFriend = async text => {
     try {
       setIsLoadingSearch(true);
@@ -72,9 +84,13 @@ const FriendScreen = () => {
   };
 
   const handleTextChange = text => {
+    setIsLoadingSearch(true);
     setSearchValue(text);
     setIsShowSuggestSearch(true);
     setDebouncedText(text);
+    if (text == '') {
+      setIsShowSuggestSearch(false);
+    }
   };
 
   const handleVisibleSearchSuggest = () => {
@@ -240,7 +256,7 @@ const FriendScreen = () => {
                       {item.fullName}
                     </Text>
                     <TouchableOpacity
-                      onPress={handleAddNewFriend}
+                      onPress={() => handleAddNewFriend(item._id)}
                       style={styles.buttonItem}>
                       <Text style={styles.textButtonItem}>Add +</Text>
                     </TouchableOpacity>
@@ -265,6 +281,7 @@ const FriendScreen = () => {
             <View
               style={{
                 width: '100%',
+                minHeight: 50,
                 backgroundColor: 'rgb(40, 40, 40)',
                 borderRadius: 10,
                 padding: 10,
@@ -279,7 +296,11 @@ const FriendScreen = () => {
                 elevation: 14,
               }}>
               {isLoadingSearch ? (
-                <ActivityIndicator color={'white'} />
+                <ActivityIndicator color={colors.primary} size={'large'} />
+              ) : dataSearch?.results && dataSearch.results.length === 0 ? (
+                <View className="justify-center items-center">
+                  <Text className="text-white text-base">Not found!!!</Text>
+                </View>
               ) : (
                 <FlatList
                   showsVerticalScrollIndicator={false}
