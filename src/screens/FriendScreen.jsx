@@ -14,7 +14,7 @@ import {
 import * as IconOutline from 'react-native-heroicons/outline';
 import * as IconSolid from 'react-native-heroicons/solid';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import {useSelector} from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
 import {dimen} from '../constants';
 import BoxContentFriends from '../components/BoxContentFriendsBottomSheet';
 import CricleButton from '../components/CricleButton';
@@ -26,6 +26,9 @@ import {useNavigation} from '@react-navigation/native';
 import {AvoidSoftInput} from 'react-native-avoid-softinput';
 import axios from 'axios';
 import {API_SEARCH_FRIENDS, API_SEND_FRIENDS_REQUEST} from '../api';
+import {fetchProfileRequest} from './../redux/action/Profile';
+import {fetchSuggestionFriendsRequest} from './../redux/action/SuggestionFriends';
+import {fetchReceiverFriendsRequest} from '../redux/action/ReceiverFriendsRequest';
 
 const FriendScreen = () => {
   const [isShowSuggestSearch, setIsShowSuggestSearch] = useState(false);
@@ -37,7 +40,12 @@ const FriendScreen = () => {
   const suggestionFriends = useSelector(
     state => state.suggestionFriendsReducer.data,
   );
+  const receiverFriendsRequest = useSelector(
+    state => state.receiverFriendsRequest.data,
+  );
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const token = useSelector(state => state.authReducer.userToken);
 
   const inputSearchRef = useRef(null);
 
@@ -62,11 +70,16 @@ const FriendScreen = () => {
         `${API_SEND_FRIENDS_REQUEST}`,
         {friendId: id},
         {
-          headers: {Authorization: 'Bearer ' + profile?.results.token},
+          headers: {Authorization: 'Bearer ' + profile?.result.token},
         },
       )
-      .then(response => {})
-      .catch(error => {});
+      .then(response => {
+        dispatch(fetchProfileRequest(profile.result.token));
+        dispatch(fetchSuggestionFriendsRequest(profile.result.token));
+      })
+      .catch(error => {
+        console.log(error);
+      });
   };
   const handleSearchedFriend = async text => {
     try {
@@ -74,7 +87,6 @@ const FriendScreen = () => {
       const response = await axios.get(
         `${API_SEARCH_FRIENDS}?searchTerm=${text}`,
       );
-      console.log(response.data);
       setDataSearch(response.data);
     } catch (error) {
       console.error('Error fetching data: ', error);
@@ -193,7 +205,7 @@ const FriendScreen = () => {
                   <IconSolid.UsersIcon color={colors.bg_dark} size={20} />
                 </View>
               }
-              data={profile?.freindRequests}
+              data={receiverFriendsRequest?.results}
               renderItem={({item, index}) => {
                 return (
                   <View

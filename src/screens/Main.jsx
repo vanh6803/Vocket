@@ -10,6 +10,7 @@ import PageContents from '../features/PageContents';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {fetchProfileRequest} from './../redux/action/Profile';
 import {fetchSuggestionFriendsRequest} from '../redux/action/SuggestionFriends';
+import {fetchReceiverFriendsRequest} from '../redux/action/ReceiverFriendsRequest';
 
 export default function Main() {
   const navigation = useNavigation();
@@ -20,14 +21,17 @@ export default function Main() {
 
   useEffect(() => {
     dispatch(fetchPostRequest());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(fetchProfileRequest(token));
-  }, []);
+  }, [dispatch]);
   useEffect(() => {
     dispatch(fetchSuggestionFriendsRequest(token));
-  }, []);
+  }, [dispatch]);
+  useEffect(() => {
+    dispatch(fetchReceiverFriendsRequest(token));
+  }, [dispatch]);
 
   return (
     <SafeAreaView style={{flex: 1}}>

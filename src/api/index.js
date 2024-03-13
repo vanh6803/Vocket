@@ -3,7 +3,7 @@ import {BASE_URL} from '../constants';
 export const API_LOGIN = `${BASE_URL}api/login`;
 export const API_REGISTER = `${BASE_URL}api/register`;
 export const API_LOGOUT = `${BASE_URL}api/logout`;
-export const API_PROFILE = `${BASE_URL}api/detailUser`;
+export const API_PROFILE = `${BASE_URL}api/user/detail`;
 export const API_UPDATE_PROFILE = `${BASE_URL}api/updateProfile`;
 export const API_CHANGE_PASSWORD = `${BASE_URL}api/changePassword`;
 export const API_CHECK_MAIL_EXITS = `${BASE_URL}api/emailExists`;
