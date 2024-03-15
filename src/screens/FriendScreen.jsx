@@ -10,6 +10,8 @@ import {
   TextInput,
   FlatList,
   ActivityIndicator,
+  Modal,
+  Pressable,
 } from 'react-native';
 import * as IconOutline from 'react-native-heroicons/outline';
 import * as IconSolid from 'react-native-heroicons/solid';
@@ -21,14 +23,20 @@ import CricleButton from '../components/CricleButton';
 import Avatar from '../components/Avatar';
 import {shortenName} from '../utils/ConvertName';
 import {colors} from '../assets/Colors';
-import {globals} from '../styles/Global';
+import {globals, modalStyle} from '../styles/Global';
 import {useNavigation} from '@react-navigation/native';
 import {AvoidSoftInput} from 'react-native-avoid-softinput';
 import axios from 'axios';
-import {API_SEARCH_FRIENDS, API_SEND_FRIENDS_REQUEST} from '../api';
+import {
+  API_ACCEPT_FRIENDS_REQUEST,
+  API_SEARCH_FRIENDS,
+  API_SEND_FRIENDS_REQUEST,
+} from '../api';
 import {fetchProfileRequest} from './../redux/action/Profile';
 import {fetchSuggestionFriendsRequest} from './../redux/action/SuggestionFriends';
 import {fetchReceiverFriendsRequest} from '../redux/action/ReceiverFriendsRequest';
+import {TextStyle} from '../styles/TextStyle';
+import SizeBox from '../components/SizeBox';
 
 const FriendScreen = () => {
   const [isShowSuggestSearch, setIsShowSuggestSearch] = useState(false);
@@ -36,6 +44,9 @@ const FriendScreen = () => {
   const [dataSearch, setDataSearch] = useState(null);
   const [searchValue, setSearchValue] = useState('');
   const [debouncedText, setDebouncedText] = useState('');
+  const [modalFriendProfileVisible, setModalFriendProfileVisible] =
+    useState(false);
+  const [friendSelected, setFriendSelected] = useState(null);
   const profile = useSelector(state => state.profileReducer.data);
   const suggestionFriends = useSelector(
     state => state.suggestionFriendsReducer.data,
@@ -43,11 +54,12 @@ const FriendScreen = () => {
   const receiverFriendsRequest = useSelector(
     state => state.receiverFriendsRequest.data,
   );
+  const currentFriends = useSelector(state => state.currentFriends.data);
+  const token = useSelector(state => state.authReducer.userToken);
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const token = useSelector(state => state.authReducer.userToken);
-
   const inputSearchRef = useRef(null);
+  const contentModalRef = useRef(null);
 
   useEffect(() => {
     AvoidSoftInput.setAdjustPan();
@@ -61,10 +73,29 @@ const FriendScreen = () => {
     return () => clearTimeout(delaySearch);
   }, [debouncedText]);
 
-  const handleAccecptFriend = () => {};
-  const handleRemoveFriend = () => {};
-  const handleAddNewFriend = id => {
+  const handleAccecptFriend = id => {
     console.log(id);
+    axios
+      .put(
+        API_ACCEPT_FRIENDS_REQUEST,
+        {friendId: id},
+        {
+          headers: {Authorization: 'Bearer ' + profile?.result.token},
+        },
+      )
+      .then(response => {
+        console.log(response.data);
+        dispatch(fetchProfileRequest(profile.result.token));
+        dispatch(fetchSuggestionFriendsRequest(profile.result.token));
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+  const handleRemoveFriend = id => {
+    console.log(id);
+  };
+  const handleAddNewFriend = id => {
     axios
       .post(
         `${API_SEND_FRIENDS_REQUEST}`,
@@ -93,6 +124,17 @@ const FriendScreen = () => {
     } finally {
       setIsLoadingSearch(false);
     }
+  };
+
+  const closeModalProfileFriend = () => {
+    setFriendSelected(null);
+    setModalFriendProfileVisible(false);
+  };
+
+  const openModalProfileFriend = item => {
+    console.log(item);
+    setFriendSelected(item);
+    setModalFriendProfileVisible(true);
   };
 
   const handleTextChange = text => {
@@ -139,6 +181,7 @@ const FriendScreen = () => {
               fontSize: 16,
               padding: dimen.width * 0.01,
             }}
+            cursorColor={'white'}
             keyboardAppearance="dark"
             onChangeText={text => handleTextChange(text)}
           />
@@ -161,7 +204,7 @@ const FriendScreen = () => {
             <BoxContentFriends
               title={'Your friends'}
               icon={<Icon name="users" color={'white'} size={20} />}
-              data={suggestionFriends?.results}
+              data={currentFriends?.results}
               renderItem={({item, index}) => {
                 return (
                   <View
@@ -172,21 +215,28 @@ const FriendScreen = () => {
                         marginVertical: dimen.width * 0.015,
                       },
                     ]}>
-                    <Avatar
-                      uri={item?.avatar}
-                      name={shortenName(item?.fullName)}
-                    />
-                    <Text
+                    <Pressable
                       style={{
-                        color: 'white',
+                        flexDirection: 'row',
                         flex: 1,
-                        fontSize: dimen.width * 0.04,
-                        marginLeft: dimen.width * 0.03,
-                      }}>
-                      {item.fullName}
-                    </Text>
+                        alignItems: 'center',
+                      }}
+                      onPress={() => openModalProfileFriend(item)}>
+                      <Avatar
+                        uri={item?.avatar}
+                        name={shortenName(item?.fullName)}
+                      />
+                      <Text
+                        style={{
+                          color: 'white',
+                          fontSize: dimen.width * 0.04,
+                          marginLeft: dimen.width * 0.03,
+                        }}>
+                        {item.fullName}
+                      </Text>
+                    </Pressable>
                     <CricleButton
-                      onPress={handleRemoveFriend}
+                      onPress={() => handleRemoveFriend(item._id)}
                       styleButton={globals.circleButton}
                       icon={<IconSolid.XMarkIcon color={'white'} size={20} />}
                     />
@@ -230,7 +280,7 @@ const FriendScreen = () => {
                       {item.fullName}
                     </Text>
                     <TouchableOpacity
-                      onPress={handleAccecptFriend}
+                      onPress={() => handleAccecptFriend(item._id)}
                       style={styles.buttonItem}>
                       <Text style={styles.textButtonItem}>✓ Accept</Text>
                     </TouchableOpacity>
@@ -238,12 +288,17 @@ const FriendScreen = () => {
                 );
               }}
             />
-
-            {/* suggestions */}
+            {/* sent friend requests */}
             <BoxContentFriends
-              title={'Suggestions'}
-              icon={<Icon name="lightbulb" color={colors.primary} size={20} />}
-              data={suggestionFriends?.results}
+              title={'sent friend requests'}
+              icon={
+                <View
+                  style={{backgroundColor: 'gray', padding: 3}}
+                  className="rounded-full justify-center items-center">
+                  <IconSolid.UsersIcon color={colors.bg_dark} size={20} />
+                </View>
+              }
+              data={receiverFriendsRequest?.results}
               renderItem={({item, index}) => {
                 return (
                   <View
@@ -268,6 +323,51 @@ const FriendScreen = () => {
                       {item.fullName}
                     </Text>
                     <TouchableOpacity
+                      onPress={() => handleAccecptFriend(item._id)}
+                      style={styles.buttonItem}>
+                      <Text style={styles.textButtonItem}>✓ Accept</Text>
+                    </TouchableOpacity>
+                  </View>
+                );
+              }}
+            />
+
+            {/* suggestions */}
+            <BoxContentFriends
+              title={'Suggestions'}
+              icon={<Icon name="lightbulb" color={colors.primary} size={20} />}
+              data={suggestionFriends?.results}
+              renderItem={({item, index}) => {
+                return (
+                  <View
+                    style={[
+                      {
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        marginVertical: dimen.width * 0.015,
+                      },
+                    ]}>
+                    <Pressable
+                      onPress={() => openModalProfileFriend(item)}
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        flex: 1,
+                      }}>
+                      <Avatar
+                        uri={item?.avatar}
+                        name={shortenName(item?.fullName)}
+                      />
+                      <Text
+                        style={{
+                          color: 'white',
+                          fontSize: dimen.width * 0.04,
+                          marginLeft: dimen.width * 0.03,
+                        }}>
+                        {item.fullName}
+                      </Text>
+                    </Pressable>
+                    <TouchableOpacity
                       onPress={() => handleAddNewFriend(item._id)}
                       style={styles.buttonItem}>
                       <Text style={styles.textButtonItem}>Add +</Text>
@@ -280,80 +380,124 @@ const FriendScreen = () => {
         </ScrollView>
 
         {isShowSuggestSearch ? (
-          <View
-            style={[
-              {
-                width: dimen.width,
-                height: 300,
-                position: 'absolute',
-                top: '14%',
-                padding: 15,
-              },
-            ]}>
+          <TouchableWithoutFeedback onPress={handleVisibleSearchSuggest}>
             <View
-              style={{
-                width: '100%',
-                minHeight: 50,
-                backgroundColor: 'rgb(40, 40, 40)',
-                borderRadius: 10,
-                padding: 10,
-                shadowColor: '#BABABA',
-                shadowOffset: {
-                  width: 0,
-                  height: 7,
+              style={[
+                {
+                  width: dimen.width,
+                  height: dimen.height,
+                  position: 'absolute',
+                  top: '14%',
+                  backgroundColor: 'rgba(70, 70, 70, 0.4)',
+                  marginTop: 20,
                 },
-                shadowOpacity: 0.41,
-                shadowRadius: 9.11,
+              ]}>
+              <View style={{paddingHorizontal: 10}}>
+                <View
+                  style={{
+                    width: '100%',
+                    minHeight: 50,
+                    backgroundColor: 'rgb(40, 40,40)',
+                    borderRadius: 10,
+                    padding: 10,
+                    shadowColor: '#FFFFFF',
+                    shadowOffset: {
+                      width: 0,
+                      height: 9,
+                    },
+                    shadowOpacity: 0.48,
+                    shadowRadius: 11.95,
+                    elevation: 10,
+                  }}>
+                  {isLoadingSearch ? (
+                    <ActivityIndicator color={colors.primary} size={'large'} />
+                  ) : dataSearch?.results && dataSearch.results.length === 0 ? (
+                    <View className="justify-center items-center">
+                      <Text className="text-white text-base">Not found!!!</Text>
+                    </View>
+                  ) : (
+                    <FlatList
+                      showsVerticalScrollIndicator={false}
+                      data={dataSearch?.results}
+                      keyExtractor={(item, index) => index.toString()}
+                      renderItem={({item, index}) => {
+                        return (
+                          <View
+                            style={[
+                              {
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                marginVertical: dimen.width * 0.015,
+                              },
+                            ]}>
+                            <Pressable
+                              onPress={() => openModalProfileFriend(item)}
+                              style={{
+                                flex: 1,
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                              }}>
+                              <Avatar
+                                uri={item?.avatar}
+                                name={shortenName(item?.fullName)}
+                              />
+                              <Text
+                                style={{
+                                  color: 'white',
 
-                elevation: 14,
-              }}>
-              {isLoadingSearch ? (
-                <ActivityIndicator color={colors.primary} size={'large'} />
-              ) : dataSearch?.results && dataSearch.results.length === 0 ? (
-                <View className="justify-center items-center">
-                  <Text className="text-white text-base">Not found!!!</Text>
+                                  fontSize: dimen.width * 0.04,
+                                  marginLeft: dimen.width * 0.03,
+                                }}>
+                                {item.fullName}
+                              </Text>
+                            </Pressable>
+                            <TouchableOpacity
+                              onPress={handleAddNewFriend}
+                              style={styles.buttonItem}>
+                              <Text style={styles.textButtonItem}>Add +</Text>
+                            </TouchableOpacity>
+                          </View>
+                        );
+                      }}
+                    />
+                  )}
                 </View>
-              ) : (
-                <FlatList
-                  showsVerticalScrollIndicator={false}
-                  data={dataSearch?.results}
-                  keyExtractor={(item, index) => index.toString()}
-                  renderItem={({item, index}) => {
-                    return (
-                      <View
-                        style={[
-                          {
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            marginVertical: dimen.width * 0.015,
-                          },
-                        ]}>
-                        <Avatar
-                          uri={item?.avatar}
-                          name={shortenName(item?.fullName)}
-                        />
-                        <Text
-                          style={{
-                            color: 'white',
-                            flex: 1,
-                            fontSize: dimen.width * 0.04,
-                            marginLeft: dimen.width * 0.03,
-                          }}>
-                          {item.fullName}
-                        </Text>
-                        <TouchableOpacity
-                          onPress={handleAddNewFriend}
-                          style={styles.buttonItem}>
-                          <Text style={styles.textButtonItem}>Add +</Text>
-                        </TouchableOpacity>
-                      </View>
-                    );
-                  }}
-                />
-              )}
+              </View>
             </View>
-          </View>
+          </TouchableWithoutFeedback>
         ) : null}
+        <Modal
+          animationType="fade"
+          visible={modalFriendProfileVisible}
+          transparent
+          onRequestClose={closeModalProfileFriend}>
+          <TouchableWithoutFeedback onPress={closeModalProfileFriend}>
+            <View style={modalStyle.container}>
+              <View>
+                <View ref={contentModalRef} style={modalStyle.contentContainer}>
+                  <View
+                    style={{flexDirection: 'row', justifyContent: 'center'}}>
+                    <Avatar
+                      size={dimen.width * 0.25}
+                      uri={friendSelected?.avatar}
+                      name={shortenName(friendSelected?.fullName)}
+                      borderWidthContainer={3}
+                      textStyle={[TextStyle.title]}
+                    />
+                  </View>
+                  <SizeBox height={dimen.height * 0.01} />
+                  <Text style={[TextStyle.title]}>
+                    {friendSelected?.fullName}
+                  </Text>
+                  <SizeBox height={dimen.height * 0.01} />
+                  <Text style={[TextStyle.small, {color: 'lightgray'}]}>
+                    {friendSelected?.email}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+        </Modal>
       </View>
     </TouchableWithoutFeedback>
   );

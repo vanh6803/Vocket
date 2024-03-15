@@ -4,6 +4,7 @@ import watchFetchProfile from './profileSaga';
 import {authSaga} from './AuthSaga';
 import watchFetchSuggestionFriends from './SuggestionFriendsSaga';
 import watchFetchReceiverFriendsRequest from './receiverFriendsRequestSaga';
+import watchFetchCurrentFriends from './CurrentFriendsSaga';
 
 function* rootSaga() {
   yield all([
@@ -12,6 +13,7 @@ function* rootSaga() {
     watchFetchProfile(),
     watchFetchSuggestionFriends(),
     watchFetchReceiverFriendsRequest(),
+    watchFetchCurrentFriends(),
   ]);
 }
 export default rootSaga;

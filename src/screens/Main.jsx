@@ -11,6 +11,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {fetchProfileRequest} from './../redux/action/Profile';
 import {fetchSuggestionFriendsRequest} from '../redux/action/SuggestionFriends';
 import {fetchReceiverFriendsRequest} from '../redux/action/ReceiverFriendsRequest';
+import {fetchCurrentFriendsRequest} from '../redux/action/CurrentFriends';
 
 export default function Main() {
   const navigation = useNavigation();
@@ -31,6 +32,9 @@ export default function Main() {
   }, [dispatch]);
   useEffect(() => {
     dispatch(fetchReceiverFriendsRequest(token));
+  }, [dispatch]);
+  useEffect(() => {
+    dispatch(fetchCurrentFriendsRequest(token));
   }, [dispatch]);
 
   return (

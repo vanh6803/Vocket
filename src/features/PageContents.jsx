@@ -199,7 +199,6 @@ export default function PageContents({goToPage}) {
                         priority: FastImage.priority.normal,
                       }}
                       style={{width: dimen.width, aspectRatio: 1}}
-                      className="aspect-square"
                     />
                     {data?.content ? (
                       <Text

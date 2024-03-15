@@ -17,6 +17,7 @@ export const API_REJECT_FRIENDS_REQUEST = `${BASE_URL}api/friend/reject-friend-r
 export const API_CANCEL_FRIENDS_REQUEST = `${BASE_URL}api/friend/cancel-friend-request`;
 export const API_RECEIVER_FRIENDS_REQUEST = `${BASE_URL}api/friend/received-friend-requests`;
 export const API_CURRENT_FRIENDS = `${BASE_URL}api/friend/current-friends`;
+export const API_SENT_FRIENDS_REQUEST = `${BASE_URL}api/friend/sent-friend-requests`;
 export const API_SUGGEST_FRIENDS = `${BASE_URL}api/friend/suggest-friends`;
 
 export const API_MESSAGE = `${BASE_URL}api/message`;

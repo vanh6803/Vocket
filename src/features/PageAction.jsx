@@ -137,9 +137,9 @@ export default function PageAction({
                 <IconSolid.UsersIcon color={'white'} />
                 <View style={{width: dimen.width * 0.01}} />
                 <Text className="text-white font-medium text-base">
-                  {profile?.result.Friends?.length == 0
-                    ? 'Friends'
-                    : 'No Friends'}
+                  {profile?.result.friends?.length == 0
+                    ? 'No Friends'
+                    : 'Your Friends'}
                 </Text>
               </View>
             </TouchableOpacity>

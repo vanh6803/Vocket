@@ -4,7 +4,7 @@ import FastImage from 'react-native-fast-image';
 import {colors} from '../assets/Colors';
 import {BASE_URL, dimen} from '../constants';
 
-const Avatar = ({uri, size, name, borderWidthContainer}) => {
+const Avatar = ({uri, size, name, borderWidthContainer, textStyle}) => {
   const imageSize = useMemo(() => size || dimen.width * 0.1, [size]);
 
   return (
@@ -45,7 +45,9 @@ const Avatar = ({uri, size, name, borderWidthContainer}) => {
               justifyContent: 'center',
               alignItems: 'center',
             }}>
-            <Text style={{color: 'white', fontWeight: 'bold'}}>{name}</Text>
+            <Text style={[{color: 'white', fontWeight: 'bold'}, textStyle]}>
+              {name}
+            </Text>
           </View>
         )}
       </View>

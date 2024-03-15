@@ -4,6 +4,7 @@ import profileReducer from './ProfileReducer';
 import authReducer from './AuthReducer';
 import suggestionFriendsReducer from './SuggestionFriendsReducer';
 import receiverFriendsRequestReducer from './ReceiverFriendsRequestReducer';
+import currentFriendsReducer from './CurrentFriendsReducer';
 
 const rootReducer = combineReducers({
   postReducer: postReducer,
@@ -11,6 +12,7 @@ const rootReducer = combineReducers({
   authReducer: authReducer,
   suggestionFriendsReducer: suggestionFriendsReducer,
   receiverFriendsRequest: receiverFriendsRequestReducer,
+  currentFriends: currentFriendsReducer,
 });
 
 export default rootReducer;

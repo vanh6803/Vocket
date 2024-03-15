@@ -19,40 +19,38 @@ export default function RenderCamera({
   isFront,
   flash,
   toggleFlash,
-  
 }) {
   const device = useCameraDevice(isFront ? 'front' : 'back'); // Chọn camera dựa trên trạng thái
   const isFocuse = useIsFocused();
   const appState = useAppState();
-  const isActive = isFocuse || appState === 'active';
+  const isActive = isFocuse && appState === 'active';
 
   const format = useCameraFormat(device, [
-    {iso: 'max'},
-    {videoHdr: true},
-    {videoResolution: 'max'},
-    {photoAspectRatio: 1 / 1},
+    {photoAspectRatio: 1},
     {photoResolution: 'max'},
-    {pixelFormat: 'native'},
   ]);
 
   return (
     <View>
       <View
-        className="rounded-[50px] overflow-hidden"
-        style={{width: dimen.width, height: dimen.width}}>
+        style={{
+          width: dimen.width,
+          height: dimen.width,
+          overflow: 'hidden',
+          borderRadius: 50,
+        }}>
         <Camera
           ref={cameraRef}
           device={device}
-          style={{aspectRatio: 1 / 1}}
+          style={{width: dimen.width, height: dimen.width}}
           isActive={isActive}
           photo={true}
           orientation="portrait"
           format={format}
         />
       </View>
-      <View
-        className="flex flex-row justify-around items-center"
-        style={{marginTop: dimen.height * 0.03}}>
+      <View style={{height: dimen.height * 0.03}} />
+      <View className="flex flex-row justify-around items-center">
         <CricleButton
           icon={
             flash ? (
