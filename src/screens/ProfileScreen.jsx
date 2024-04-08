@@ -23,6 +23,7 @@ import * as IconOutline from 'react-native-heroicons/outline';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {colors} from '../assets/Colors';
 import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
+import {globals} from '../styles/Global';
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
@@ -31,7 +32,7 @@ const ProfileScreen = () => {
 
   const bottomSheetPhotoRef = useRef(null);
   const bottomSheetOptionRef = useRef(null);
-  const snapPointsOption = useMemo(() => ['37%'], []);
+  const snapPointsOption = useMemo(() => ['40%'], []);
 
   const [photos, setPhotos] = useState();
 
@@ -64,7 +65,13 @@ const ProfileScreen = () => {
     }
   };
   return (
-    <ScrollView style={{flex: 1, backgroundColor: colors.bg_dark}}>
+    <ScrollView
+      style={{
+        flex: 1,
+        backgroundColor: colors.bg_dark,
+        borderTopRightRadius: 50,
+        borderTopLeftRadius: 50,
+      }}>
       <TouchableWithoutFeedback
         onPress={() => {
           bottomSheetOptionRef.current.close();
@@ -74,13 +81,16 @@ const ProfileScreen = () => {
             flex: 1,
           }}>
           {/* header */}
-          <TouchableOpacity onPress={handleShowOptionBottomSheet}>
-            <View
-              className="border-4 border-yellow-500 rounded-full self-center p-1"
+          <View style={globals.indicatorLineBottomSheet} />
+
+          <View
+            className="flex-row border-4 border-yellow-500 rounded-full self-center p-1"
+            style={{marginTop: dimen.height * 0.03}}>
+            <TouchableOpacity
+              onPress={handleShowOptionBottomSheet}
               style={{
                 width: dimen.width * 0.3,
                 height: dimen.width * 0.3,
-                marginTop: dimen.height * 0.03,
                 overflow: 'hidden',
               }}>
               {profile?.result.avatar != '' ? (
@@ -102,8 +112,8 @@ const ProfileScreen = () => {
                   </Text>
                 </View>
               )}
-            </View>
-          </TouchableOpacity>
+            </TouchableOpacity>
+          </View>
           <Text
             className="text-white text-2xl font-semibold self-center"
             style={{marginTop: dimen.width * 0.03}}>
@@ -237,7 +247,11 @@ const ProfileScreen = () => {
                   Delete avatar
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.buttonOption}>
+              <TouchableOpacity
+                style={styles.buttonOption}
+                onPress={() => {
+                  bottomSheetOptionRef.current.close();
+                }}>
                 <Text style={styles.titleOption}>Cancel</Text>
               </TouchableOpacity>
             </BottomSheetView>

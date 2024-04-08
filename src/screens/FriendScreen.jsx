@@ -29,14 +29,19 @@ import {AvoidSoftInput} from 'react-native-avoid-softinput';
 import axios from 'axios';
 import {
   API_ACCEPT_FRIENDS_REQUEST,
+  API_CANCEL_FRIENDS_REQUEST,
+  API_REJECT_FRIENDS_REQUEST,
   API_SEARCH_FRIENDS,
   API_SEND_FRIENDS_REQUEST,
+  UNFRIEND,
 } from '../api';
 import {fetchProfileRequest} from './../redux/action/Profile';
 import {fetchSuggestionFriendsRequest} from './../redux/action/SuggestionFriends';
 import {fetchReceiverFriendsRequest} from '../redux/action/ReceiverFriendsRequest';
 import {TextStyle} from '../styles/TextStyle';
 import SizeBox from '../components/SizeBox';
+import {fetchSentFriendsRequest} from '../redux/action/SentFriends';
+import {fetchCurrentFriendsRequest} from '../redux/action/CurrentFriends';
 
 const FriendScreen = () => {
   const [isShowSuggestSearch, setIsShowSuggestSearch] = useState(false);
@@ -53,6 +58,9 @@ const FriendScreen = () => {
   );
   const receiverFriendsRequest = useSelector(
     state => state.receiverFriendsRequest.data,
+  );
+  const sentFriendsRequest = useSelector(
+    state => state.sentFriendsReducer.data,
   );
   const currentFriends = useSelector(state => state.currentFriends.data);
   const token = useSelector(state => state.authReducer.userToken);
@@ -85,7 +93,7 @@ const FriendScreen = () => {
       )
       .then(response => {
         console.log(response.data);
-        dispatch(fetchProfileRequest(profile.result.token));
+        dispatch(fetchCurrentFriendsRequest(profile.result.token));
         dispatch(fetchSuggestionFriendsRequest(profile.result.token));
       })
       .catch(error => {
@@ -94,7 +102,59 @@ const FriendScreen = () => {
   };
   const handleRemoveFriend = id => {
     console.log(id);
+    axios
+      .put(
+        `${UNFRIEND}`,
+        {friendId: id},
+        {
+          headers: {Authorization: 'Bearer ' + profile?.result.token},
+        },
+      )
+      .then(response => {
+        dispatch(fetchCurrentFriendsRequest(profile.result.token));
+        dispatch(fetchSuggestionFriendsRequest(profile.result.token));
+      })
+      .catch(error => {
+        console.log(error.message);
+      });
   };
+
+  const handleRejectFriend = id => {
+    axios
+      .put(
+        `${API_REJECT_FRIENDS_REQUEST}`,
+        {friendId: id},
+        {
+          headers: {Authorization: 'Bearer ' + profile?.result.token},
+        },
+      )
+      .then(response => {
+        dispatch(fetchSentFriendsRequest(profile.result.token));
+        dispatch(fetchSuggestionFriendsRequest(profile.result.token));
+      })
+      .catch(error => {
+        console.log(error.message);
+      });
+  };
+
+  const handleCancelFriend = id => {
+    axios
+      .put(
+        `${API_CANCEL_FRIENDS_REQUEST}`,
+        {friendId: id},
+        {
+          headers: {Authorization: 'Bearer ' + profile?.result.token},
+        },
+      )
+      .then(response => {
+        dispatch(fetchSentFriendsRequest(profile.result.token));
+        dispatch(fetchSuggestionFriendsRequest(profile.result.token));
+      })
+      .catch(error => {
+        console.log(error.message);
+      });
+  };
+
   const handleAddNewFriend = id => {
     axios
       .post(
@@ -105,7 +165,7 @@ const FriendScreen = () => {
         },
       )
       .then(response => {
-        dispatch(fetchProfileRequest(profile.result.token));
+        dispatch(fetchSentFriendsRequest(profile.result.token));
         dispatch(fetchSuggestionFriendsRequest(profile.result.token));
       })
       .catch(error => {
@@ -155,16 +215,35 @@ const FriendScreen = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={{flex: 1, backgroundColor: colors.bg_dark}}>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: colors.bg_dark,
+          borderTopRightRadius: 50,
+          borderTopLeftRadius: 50,
+          overflow: 'hidden',
+        }}>
+        <View style={globals.indicatorLineBottomSheet} />
         <View style={{height: dimen.height * 0.03}} />
         <Text
-          style={{
-            color: 'white',
-            fontSize: dimen.width * 0.05,
-            fontWeight: 'bold',
-            alignSelf: 'center',
-          }}>
+          style={[
+            TextStyle.large_2,
+            {fontWeight: 'bold', alignSelf: 'center'},
+          ]}>
           Your Friends
+        </Text>
+        <Text
+          style={[
+            TextStyle.large_2,
+            {
+              alignSelf: 'center',
+              fontStyle: 'normal',
+              fontWeight: 'normal',
+              color: 'gray',
+              fontSize: 20,
+            },
+          ]}>
+          {currentFriends?.results.length} / 20 friends have been added
         </Text>
 
         <View style={{height: dimen.height * 0.01}} />
@@ -290,15 +369,13 @@ const FriendScreen = () => {
             />
             {/* sent friend requests */}
             <BoxContentFriends
-              title={'sent friend requests'}
+              title={'Sent friend requests'}
               icon={
-                <View
-                  style={{backgroundColor: 'gray', padding: 3}}
-                  className="rounded-full justify-center items-center">
-                  <IconSolid.UsersIcon color={colors.bg_dark} size={20} />
+                <View className="rounded-full justify-center items-center">
+                  <Text style={TextStyle.large}>✓</Text>
                 </View>
               }
-              data={receiverFriendsRequest?.results}
+              data={sentFriendsRequest?.results}
               renderItem={({item, index}) => {
                 return (
                   <View
@@ -323,9 +400,9 @@ const FriendScreen = () => {
                       {item.fullName}
                     </Text>
                     <TouchableOpacity
-                      onPress={() => handleAccecptFriend(item._id)}
+                      onPress={() => handleCancelFriend(item._id)}
                       style={styles.buttonItem}>
-                      <Text style={styles.textButtonItem}>✓ Accept</Text>
+                      <Text style={styles.textButtonItem}>✖ Cancel</Text>
                     </TouchableOpacity>
                   </View>
                 );
@@ -471,32 +548,43 @@ const FriendScreen = () => {
           visible={modalFriendProfileVisible}
           transparent
           onRequestClose={closeModalProfileFriend}>
-          <TouchableWithoutFeedback onPress={closeModalProfileFriend}>
-            <View style={modalStyle.container}>
-              <View>
-                <View ref={contentModalRef} style={modalStyle.contentContainer}>
-                  <View
-                    style={{flexDirection: 'row', justifyContent: 'center'}}>
-                    <Avatar
-                      size={dimen.width * 0.25}
-                      uri={friendSelected?.avatar}
-                      name={shortenName(friendSelected?.fullName)}
-                      borderWidthContainer={3}
-                      textStyle={[TextStyle.title]}
-                    />
-                  </View>
-                  <SizeBox height={dimen.height * 0.01} />
-                  <Text style={[TextStyle.title]}>
-                    {friendSelected?.fullName}
-                  </Text>
-                  <SizeBox height={dimen.height * 0.01} />
-                  <Text style={[TextStyle.small, {color: 'lightgray'}]}>
-                    {friendSelected?.email}
-                  </Text>
+          <View
+            style={[modalStyle.container, {backgroundColor: 'transparent'}]}>
+            <View>
+              <View ref={contentModalRef} style={modalStyle.contentContainer}>
+                <TouchableOpacity
+                  onPress={closeModalProfileFriend}
+                  style={{
+                    position: 'absolute',
+                    zIndex: 1,
+                    right: 0,
+                    top: 0,
+                    marginRight: dimen.width * 0.05,
+                    marginTop: dimen.width * 0.03,
+                  }}>
+                  <IconSolid.XMarkIcon color={'white'} size={30} />
+                </TouchableOpacity>
+                <SizeBox height={dimen.height * 0.01} />
+                <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+                  <Avatar
+                    size={dimen.width * 0.25}
+                    uri={friendSelected?.avatar}
+                    name={shortenName(friendSelected?.fullName)}
+                    borderWidthContainer={3}
+                    textStyle={[TextStyle.title]}
+                  />
                 </View>
+                <SizeBox height={dimen.height * 0.01} />
+                <Text style={[TextStyle.title]}>
+                  {friendSelected?.fullName}
+                </Text>
+                <SizeBox height={dimen.height * 0.01} />
+                <Text style={[TextStyle.small, {color: 'lightgray'}]}>
+                  {friendSelected?.email}
+                </Text>
               </View>
             </View>
-          </TouchableWithoutFeedback>
+          </View>
         </Modal>
       </View>
     </TouchableWithoutFeedback>

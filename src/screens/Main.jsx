@@ -12,6 +12,7 @@ import {fetchProfileRequest} from './../redux/action/Profile';
 import {fetchSuggestionFriendsRequest} from '../redux/action/SuggestionFriends';
 import {fetchReceiverFriendsRequest} from '../redux/action/ReceiverFriendsRequest';
 import {fetchCurrentFriendsRequest} from '../redux/action/CurrentFriends';
+import {fetchSentFriendsRequest} from '../redux/action/SentFriends';
 
 export default function Main() {
   const navigation = useNavigation();
@@ -35,6 +36,9 @@ export default function Main() {
   }, [dispatch]);
   useEffect(() => {
     dispatch(fetchCurrentFriendsRequest(token));
+  }, [dispatch]);
+  useEffect(() => {
+    dispatch(fetchSentFriendsRequest(token));
   }, [dispatch]);
 
   return (

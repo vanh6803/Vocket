@@ -1,7 +1,7 @@
 import {takeLatest, call, put} from 'redux-saga/effects';
 import axios from 'axios';
 import {FETCH_SENT_FRIENDS_REQUEST} from '../KeyConstant';
-import {API_CURRENT_FRIENDS} from '../../api';
+import {API_CURRENT_FRIENDS, API_SENT_FRIENDS_REQUEST} from '../../api';
 import {
   fetchSentFriendsFail,
   fetchSentFriendsSuccess,
@@ -11,7 +11,7 @@ function* fetchSentFriends(action) {
   try {
     const token = action.payload.token;
     const response = yield call(() =>
-      axios.get(API_CURRENT_FRIENDS, {
+      axios.get(API_SENT_FRIENDS_REQUEST, {
         headers: {Authorization: `Bearer ${token}`},
       }),
     );

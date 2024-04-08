@@ -1,6 +1,6 @@
 import {StyleSheet} from 'react-native';
 import {colors} from '../assets/Colors';
-import { dimen } from '../constants';
+import {dimen} from '../constants';
 
 export const globals = StyleSheet.create({
   circleButton: {
@@ -8,6 +8,14 @@ export const globals = StyleSheet.create({
     padding: 10,
     justifyContent: 'center',
     alignContent: 'center',
+  },
+  indicatorLineBottomSheet: {
+    width: 30,
+    height: 5,
+    backgroundColor: 'white',
+    marginTop: dimen.width * 0.02,
+    alignSelf: 'center',
+    borderRadius: 30,
   },
 });
 

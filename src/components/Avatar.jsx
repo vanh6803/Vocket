@@ -4,14 +4,21 @@ import FastImage from 'react-native-fast-image';
 import {colors} from '../assets/Colors';
 import {BASE_URL, dimen} from '../constants';
 
-const Avatar = ({uri, size, name, borderWidthContainer, textStyle}) => {
+const Avatar = ({
+  uri,
+  size,
+  name,
+  borderWidthContainer,
+  textStyle,
+  borderColor,
+}) => {
   const imageSize = useMemo(() => size || dimen.width * 0.1, [size]);
 
   return (
     <View
       style={{
         borderWidth: borderWidthContainer ?? 1.5,
-        borderColor: colors.primary,
+        borderColor: borderColor ?? colors.primary,
         padding: 2,
         borderRadius: imageSize,
         overflow: 'hidden',

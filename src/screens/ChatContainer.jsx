@@ -14,7 +14,9 @@ import Header from '../components/Header';
 import {FlatList} from 'react-native-gesture-handler';
 import RenderItemChatContainer from '../components/RenderItemChatContainer';
 import {dimen} from '../constants';
-import FastImage from 'react-native-fast-image';
+import {useSelector} from 'react-redux';
+import Avatar from '../components/Avatar';
+import {shortenName} from '../utils/ConvertName';
 
 const data = [
   {
@@ -52,7 +54,10 @@ const data = [
 ];
 
 const ChatContainer = () => {
+  const currentFriends = useSelector(state => state.currentFriends.data);
+
   const navigation = useNavigation();
+
   return (
     <View className="flex-1" style={{backgroundColor: colors.bg_dark}}>
       <Header
@@ -82,21 +87,22 @@ const ChatContainer = () => {
       </View>
       <View style={{marginTop: dimen.height * 0.01}}>
         <FlatList
-          data={data}
+          data={currentFriends?.results}
           showsHorizontalScrollIndicator={false}
           horizontal={true}
           renderItem={({item}) => {
             return (
               <Pressable
                 onPress={() => {
-                  navigation.navigate('chat');
+                  // navigation.navigate('chat')
                 }}
-                className="border-zinc-700 rounded-full border-[3px] p-[2px]"
                 style={{marginHorizontal: dimen.width * 0.01}}>
-                <FastImage
-                  source={{uri: item.avatar}}
-                  className="rounded-full"
-                  style={{width: dimen.width / 8.5, height: dimen.width / 8.5}}
+                <Avatar
+                  uri={item?.avatar}
+                  name={shortenName(item?.fullName)}
+                  borderColor={'rgb(63,63,70)'}
+                  borderWidthContainer={2.5}
+                  size={dimen.width * 0.12}
                 />
               </Pressable>
             );

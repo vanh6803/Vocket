@@ -80,6 +80,9 @@ export default function RootNavigation() {
                 cardStyleInterpolator:
                   CardStyleInterpolators.forModalPresentationIOS,
                 gestureDirection: 'vertical',
+                cardStyle: {
+                  backgroundColor: 'transparent',
+                },
               }}
             />
             <Stack.Screen
@@ -94,6 +97,9 @@ export default function RootNavigation() {
                   CardStyleInterpolators.forModalPresentationIOS,
                 gestureDirection: 'vertical',
                 keyboardHandlingEnabled: true,
+                cardStyle: {
+                  backgroundColor: 'transparent',
+                },
               }}
             />
             <Stack.Screen
