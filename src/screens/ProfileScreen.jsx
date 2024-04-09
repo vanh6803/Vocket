@@ -6,6 +6,7 @@ import {
   Text,
   ScrollView,
   TouchableWithoutFeedback,
+  StatusBar,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {shortenName} from '../utils/ConvertName';
@@ -24,6 +25,7 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import {colors} from '../assets/Colors';
 import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
 import {globals} from '../styles/Global';
+import RNFetchBlob from 'rn-fetch-blob';
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
@@ -36,10 +38,10 @@ const ProfileScreen = () => {
 
   const [photos, setPhotos] = useState();
 
-  const getPhotosFromGallery = () => {
-    CameraRoll.getPhotos({first: 20, assetType: 'Photos'}).then(res => {
-      setPhotos(res.edges);
-    });
+  const getPhotosFromGallery = async () => {
+    const path = RNFetchBlob.fs.dirs.DCIMDir;
+    const files = await RNFetchBlob.fs.ls(path);
+    console.log(files);
   };
 
   const handleShowOptionBottomSheet = () => {
@@ -227,6 +229,7 @@ const ProfileScreen = () => {
             index={-1}
             snapPoints={snapPointsOption}
             enablePanDownToClose
+            enableContentPanning={true}
             backgroundStyle={{backgroundColor: 'rgba(40,40,40,1)'}}
             handleIndicatorStyle={{
               backgroundColor: 'white',
@@ -236,7 +239,9 @@ const ProfileScreen = () => {
               <Text style={[styles.titleOption, {marginBottom: 20}]}>
                 Your avatar is visible everyone with your email
               </Text>
-              <TouchableOpacity style={styles.buttonOption}>
+              <TouchableOpacity
+                style={styles.buttonOption}
+                onPress={getPhotosFromGallery}>
                 <Text style={styles.titleOption}>Choose from library</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.buttonOption}>
