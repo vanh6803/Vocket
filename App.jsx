@@ -13,12 +13,13 @@ import store from './src/redux/store';
 
 const App = () => {
   useEffect(() => {
-    requestCameraPermission();
+    requestPermissions();
   }, []);
 
-  const requestCameraPermission = async () => {
+  const requestPermissions = async () => {
     if (Platform.OS === 'android') {
       try {
+        // Yêu cầu quyền truy cập máy ảnh
         const cameraGranted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.CAMERA,
           {
@@ -28,6 +29,7 @@ const App = () => {
           },
         );
 
+        // Yêu cầu quyền truy cập bộ nhớ
         const storageGranted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
           {
@@ -41,10 +43,10 @@ const App = () => {
           cameraGranted === PermissionsAndroid.RESULTS.GRANTED &&
           storageGranted === PermissionsAndroid.RESULTS.GRANTED
         ) {
-          // Both camera and storage permissions are granted
+          // Cả hai quyền truy cập máy ảnh và bộ nhớ đều được cấp
           console.log('Camera and storage permissions granted');
         } else {
-          // Either camera or storage permission is denied
+          // Một trong hai quyền truy cập máy ảnh hoặc bộ nhớ bị từ chối
           console.log('Camera or storage permission denied');
         }
       } catch (err) {
