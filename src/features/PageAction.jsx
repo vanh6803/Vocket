@@ -5,6 +5,8 @@ import {
   Image,
   TouchableWithoutFeedback,
   Keyboard,
+  NativeModules,
+  Platform,
 } from 'react-native';
 import React, {useMemo, useRef, useState} from 'react';
 import * as IconOutline from 'react-native-heroicons/outline';
@@ -16,10 +18,11 @@ import RenderCamera from './RenderCamera';
 import RenderImage from './RenderImage';
 import {globals} from '../styles/Global';
 import Header from '../components/Header';
-import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import {useSelector} from 'react-redux';
 import FastImage from 'react-native-fast-image';
 import {BASE_URL, dimen} from '../constants';
+
+const {ImageProcessingModule} = NativeModules;
 
 export default function PageAction({
   goToPage,
@@ -43,25 +46,19 @@ export default function PageAction({
       enableAutoStabilization: true,
       enableAutoDistortionCorrection: true,
     });
-    const rotatedImage = isFrontCamera ? await rotateImage(photo) : photo;
-    console.log(rotatedImage);
-    setImage(rotatedImage);
-  };
+    console.log(photo);
 
-  const rotateImage = async photo => {
-    try {
-      const rotateImage = await RNPhotoManipulator.manipulate(
-        `file://${photo.path}`,
-        [{rotate: 90}],
-        {
-          compress: 1,
-        },
-      );
-      return rotateImage;
-    } catch (error) {
-      console.error('Error rotating image:', error);
-      throw error;
-    }
+    let rotateDegrees = isFrontCamera ? 90 : 0;
+    let borderRadius = 50;
+
+    ImageProcessingModule.processImage(photo.path, rotateDegrees, borderRadius)
+      .then(processedImage => {
+        console.log(processedImage);
+        setImage(processedImage);
+      })
+      .catch(error => {
+        console.log(error);
+      });
   };
 
   const toggleCamera = () => {
@@ -74,10 +71,9 @@ export default function PageAction({
 
   const handleSavePhoto = async () => {
     if (image) {
+      console.log(image);
       try {
-        const saved = await CameraRoll.save(
-          isFrontCamera ? image.uri : image.path,
-        );
+        const saved = await CameraRoll.saveAsset(image);
         if (saved) {
           console.log('Photo saved successfully!');
           Snackbar.show({

@@ -1,9 +1,4 @@
-import {
-  View,
-  Image,
-  StyleSheet,
-  TextInput,
-} from 'react-native';
+import {View, Image, StyleSheet, TextInput} from 'react-native';
 import React, {useState} from 'react';
 import * as IconOutline from 'react-native-heroicons/outline';
 import * as IconSolid from 'react-native-heroicons/solid';
@@ -26,7 +21,7 @@ export default function RenderImage({
   const dispatch = useDispatch();
   const profile = useSelector(state => state.profileReducer.data);
   const auth = useSelector(state => state.authReducer.data);
-  const uri = isFront ? image.uri : `file://${image.path}`;
+  const uri = `file://${image}`;
   const sendPost = () => {
     const formData = new FormData();
     formData.append('image', {

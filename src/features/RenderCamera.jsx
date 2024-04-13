@@ -1,5 +1,5 @@
-import {View, TouchableOpacity} from 'react-native';
-import React, {useCallback} from 'react';
+import {View, TouchableOpacity, StyleSheet} from 'react-native';
+import React from 'react';
 import {
   useCameraDevice,
   Camera,
@@ -20,21 +20,12 @@ export default function RenderCamera({
   flash,
   toggleFlash,
 }) {
-  const device = useCameraDevice(isFront ? 'front' : 'back', {
-    physicalDevices: [
-      'ultra-wide-angle-camera',
-      'wide-angle-camera',
-      'telephoto-camera',
-    ],
-  });
+  const device = useCameraDevice(isFront ? 'front' : 'back');
   const isFocuse = useIsFocused();
   const appState = useAppState();
   const isActive = isFocuse && appState === 'active';
 
-  const format = useCameraFormat(device, [
-    {photoAspectRatio: 1},
-    {photoResolution: 'max'},
-  ]);
+  const format = useCameraFormat(device, [{photoAspectRatio: 1}]);
 
   return (
     <View>
@@ -48,13 +39,11 @@ export default function RenderCamera({
         <Camera
           ref={cameraRef}
           device={device}
-          style={{width: dimen.width, height: dimen.width}}
           isActive={isActive}
+          style={StyleSheet.absoluteFill}
+          resizeMode="cover"
           photo={true}
           orientation="portrait"
-          enableHighQualityPhotos={true}
-          zoom={device.neutralZoom}
-          enableZoomGesture={true}
           format={format}
         />
       </View>
