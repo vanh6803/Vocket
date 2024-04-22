@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -11,158 +11,159 @@ import {
 import {colors} from '../assets/Colors';
 import * as IconOutline from 'react-native-heroicons/outline';
 import CricleButton from '../components/CricleButton';
-import {dimen} from '../constants';
-import FastImage from 'react-native-fast-image';
+import {BASE_URL, dimen} from '../constants';
 import HeaderChat from '../components/headerChat';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {AvoidSoftInput} from 'react-native-avoid-softinput';
-
-const data = [
-  {
-    id: 1,
-    name: 'vanh',
-    avatar:
-      'https://kenh14cdn.com/thumb_w/660/203336854389633024/2022/3/28/photo-1-16484498472652092974741.jpg',
-    uid: 'a',
-    content: 'haha',
-  },
-  {
-    id: 2,
-    name: 'vanh',
-    avatar:
-      'https://kenh14cdn.com/thumb_w/660/203336854389633024/2022/3/28/photo-1-16484498472652092974741.jpg',
-    uid: 'b',
-    content: 'hehe',
-  },
-  {
-    id: 3,
-    name: 'vanh',
-    avatar:
-      'https://kenh14cdn.com/thumb_w/660/203336854389633024/2022/3/28/photo-1-16484498472652092974741.jpg',
-    uid: 'a',
-    content: 'abcxyz',
-  },
-  {
-    id: 4,
-    name: 'vanh',
-    avatar:
-      'https://kenh14cdn.com/thumb_w/660/203336854389633024/2022/3/28/photo-1-16484498472652092974741.jpg',
-    uid: 'b',
-    content: 'haha',
-  },
-  {
-    id: 5,
-    name: 'vanh',
-    avatar:
-      'https://kenh14cdn.com/thumb_w/660/203336854389633024/2022/3/28/photo-1-16484498472652092974741.jpg',
-    uid: 'b',
-    content:
-      "It's important to highlight the navigation prop is not passed in to all components; only screen components receive this prop automatically! React Navigation doesn't do any magic here. For example, if you were to define a MyBackButton component and render it as a child of a screen component, you would not be able to access the navigation prop on it. If, however, you wish to access the navigation prop in any of your components, you may use the useNavigation hook.",
-  },
-  {
-    id: 6,
-    name: 'vanh',
-    avatar:
-      'https://kenh14cdn.com/thumb_w/660/203336854389633024/2022/3/28/photo-1-16484498472652092974741.jpg',
-    uid: 'a',
-    content:
-      "It's important to highlight the navigation prop is not passed in to all components; only screen components receive this prop automatically! React Navigation doesn't do any magic here. For example, if you were to define a MyBackButton component and render it as a child of a screen component, you would not be able to access the navigation prop on it. If, however, you wish to access the navigation prop in any of your components, you may use the useNavigation hook.",
-  },
-];
+import {useSelector} from 'react-redux';
+import {io} from 'socket.io-client';
+import axios from 'axios';
+import {API_MESSAGE} from '../api';
+import Avatar from '../components/Avatar';
+import {shortenName} from '../utils/ConvertName';
 
 const ChatScreen = () => {
-  const navigation = useNavigation();
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState('');
+  const socket = useRef(null);
 
-  const [keyboardShow, setKeyboardShow] = useState(false);
+  const navigation = useNavigation();
+  const route = useRoute();
+  const profile = useSelector(state => state.profileReducer.data);
+  const friend = route.params?.friend;
+  const receiverId = friend?._id;
+  const senderId = profile?.result._id;
 
   useEffect(() => {
-    AvoidSoftInput.setAdjustResize();
+    const fetchChatHistory = async () => {
+      try {
+        const response = await axios.get(
+          `${API_MESSAGE}/${senderId}/${receiverId}`,
+        );
+        setMessages(response.data);
+      } catch (error) {
+        console.error('Error fetching chat history:', error);
+      }
+    };
+
+    fetchChatHistory();
   }, []);
+
+  useEffect(() => {
+    socket.current = io(BASE_URL);
+    const room = [senderId, receiverId].sort().join('_');
+    socket.current.emit('joinRoom', room);
+
+    socket.current.on('receiveMessage', message => {
+      setMessages(prevMessages => [message, ...prevMessages]);
+    });
+
+    return () => {
+      socket.current.disconnect();
+    };
+  }, [senderId, receiverId]);
 
   const handleBack = () => {
     navigation.goBack();
   };
 
-  useEffect(() => {
-    const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
-      setKeyboardShow(true);
-    });
-    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
-      setKeyboardShow(false);
-    });
-
-    return () => {
-      showSubscription.remove();
-      hideSubscription.remove();
-    };
-  }, []);
+  const handleSendMessage = async () => {
+    if (newMessage.trim()) {
+      const messageData = {
+        sender: senderId,
+        receiver: receiverId,
+        message: newMessage,
+        room: [senderId, receiverId].sort().join('_'),
+      };
+      try {
+        socket.current.emit('sendMessage', messageData);
+        setNewMessage('');
+      } catch (error) {
+        console.error('Error sending message:', error);
+      }
+    }
+  };
 
   return (
-    <KeyboardAvoidingView
-      style={{backgroundColor: colors.bg_dark, flex: 1}}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <HeaderChat onBackPress={handleBack} />
-      {/* body */}
+    <View style={{backgroundColor: colors.bg_dark, flex: 1}}>
+      <HeaderChat
+        onBackPress={handleBack}
+        uri={friend.avatar}
+        name={friend.fullName}
+      />
       <FlatList
-        style={{backgroundColor: 'rgba(50,50,50,0.3)', flex: 1}}
-        data={data}
+        style={{flex: 1}}
+        data={messages}
         inverted
-        renderItem={({item}) => {
+        renderItem={({item, index}) => {
           return (
             <View
-              className="flex-row flex-1"
               style={{
+                flexDirection: item.sender == senderId ? 'row-reverse' : 'row',
                 alignItems: 'center',
-                marginVertical: dimen.height * 0.01,
-                flexDirection: item.uid == 'a' ? 'row-reverse' : 'row',
+                paddingVertical: 10,
+                paddingHorizontal: 5,
               }}>
-              <FastImage
-                source={{uri: item.avatar}}
-                className="rounded-full self-end m-1"
-                style={{width: dimen.width * 0.1, height: dimen.width * 0.1}}
+              <Avatar
+                borderWidthContainer={0}
+                uri={
+                  item.sender == senderId
+                    ? profile.result.avatar
+                    : friend.avatar
+                }
+                name={shortenName(item.receiver.fullName)}
               />
               <View
-                className="p-2 px-4 rounded-3xl"
                 style={{
                   backgroundColor:
-                    item.uid == 'a'
+                    item.sender == profile?.result._id
                       ? 'rgba(255,255,255,1)'
                       : 'rgba(129,129,129,0.2)',
-                  flexDirection: item.uid == 'a' ? 'row-reverse' : 'row',
-                  maxWidth: dimen.width * 0.7,
+                  borderRadius: 20,
+                  padding: 10,
+                  maxWidth: '70%',
                 }}>
                 <Text
-                  className="text-base"
-                  style={{color: item.uid == 'a' ? 'black' : 'white'}}>
-                  {item.content}
+                  style={{
+                    color:
+                      item.sender == profile?.result._id ? 'black' : 'white',
+                  }}>
+                  {item.message}
                 </Text>
               </View>
             </View>
           );
         }}
-        keyExtractor={item => item.id}
+        keyExtractor={(item, index) => item._id.toString()}
       />
-      {/* Input */}
       <View
-        className="flex-row items-center"
         style={{
-          marginBottom: keyboardShow
-            ? dimen.height * 0.04
-            : dimen.height * 0.01,
+          flexDirection: 'row',
+          marginBottom: dimen.height * 0.01,
           marginTop: dimen.height * 0.01,
+          alignItems: 'center',
+          backgroundColor: colors.bg_optacity,
+          borderWidth: 1,
+          borderRadius: 30,
+          paddingHorizontal: 8,
+          marginHorizontal: 10,
         }}>
         <TextInput
-          placeholder="enter message"
-          placeholderTextColor={'gray'}
-          className="border border-white flex-1 mt-1 mx-2 p-2 px-5 rounded-3xl text-white"
-          cursorColor={'white'}
+          placeholder="Enter message"
+          placeholderTextColor={'#757575'}
+          cursorColor={'#E0E0E0'}
+          style={{color: '#E0E0E0', flex: 1}}
+          value={newMessage}
+          onChangeText={setNewMessage}
+          multiline
         />
         <CricleButton
+          onPress={handleSendMessage}
           styleButton={styles.sendBtn}
-          icon={<IconOutline.PaperAirplaneIcon size={30} color={'white'} />}
+          icon={<IconOutline.PaperAirplaneIcon color={'white'} />}
         />
       </View>
-    </KeyboardAvoidingView>
+    </View>
   );
 };
 

@@ -11,6 +11,7 @@ const Avatar = ({
   borderWidthContainer,
   textStyle,
   borderColor,
+  marginHorizontal,
 }) => {
   const imageSize = useMemo(() => size || dimen.width * 0.1, [size]);
 
@@ -22,6 +23,7 @@ const Avatar = ({
         padding: 2,
         borderRadius: imageSize,
         overflow: 'hidden',
+        marginHorizontal: marginHorizontal | undefined,
       }}>
       <View
         style={{

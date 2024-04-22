@@ -1,4 +1,4 @@
-import React, {useMemo, useRef, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -9,6 +9,9 @@ import {
   StatusBar,
   NativeModules,
   FlatList,
+  Modal,
+  BackHandler,
+  Alert,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {shortenName} from '../utils/ConvertName';
@@ -16,7 +19,6 @@ import BoxContainer from '../components/BoxContainer';
 import ButtonOption from '../components/ButtonOption';
 import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
-import {CameraRoll} from '@react-native-camera-roll/camera-roll';
 import {signOut} from '../redux/action/Auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {BASE_URL, dimen} from '../constants';
@@ -27,11 +29,14 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import {colors} from '../assets/Colors';
 import BottomSheet, {
   BottomSheetFlatList,
-  BottomSheetView,
+  useBottomSheet,
 } from '@gorhom/bottom-sheet';
-import {globals} from '../styles/Global';
-import RNFetchBlob from 'rn-fetch-blob';
+import {globals, modalStyle} from '../styles/Global';
 import {TextStyle} from '../styles/TextStyle';
+import ImageCropPicker from 'react-native-image-crop-picker';
+import {API_CHANGE_AVATAR} from '../api';
+import {fetchProfileRequest} from './../redux/action/Profile';
+import InputCustom from '../components/InputCustom';
 const ImageGalleryModule = NativeModules.MyImagesNativeModule;
 
 const ProfileScreen = () => {
@@ -41,8 +46,10 @@ const ProfileScreen = () => {
 
   const bottomSheetPhotoRef = useRef(null);
   const bottomSheetOptionRef = useRef(null);
+  const bottomSheetChangEmailRef = useRef(null);
   const snapPointsOption = useMemo(() => ['29%'], []);
   const snapChoosePhotos = useMemo(() => ['100%'], []);
+  const snapChangeEmail = useMemo(() => ['100%'], []);
 
   const [photos, setPhotos] = useState();
 
@@ -53,6 +60,40 @@ const ProfileScreen = () => {
       setPhotos(parsedImagePaths);
     });
     bottomSheetPhotoRef.current.expand();
+  };
+
+  const selectAvatar = imagePath => {
+    ImageCropPicker.openCropper({
+      path: imagePath,
+      width: dimen.width,
+      height: dimen.width,
+      cropperCircleOverlay: true,
+    })
+      .then(crop => {
+        const formData = new FormData();
+        formData.append('avatar', {
+          uri: crop.path,
+          type: 'image/jpeg',
+          name: 'avatar.jpg',
+        });
+        console.log(formData);
+        axios
+          .put(API_CHANGE_AVATAR, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              Authorization: `Bearer ${profile?.result.token}`,
+            },
+          })
+          .then(response => {
+            dispatch(fetchProfileRequest(profile?.result.token));
+          })
+          .catch(error => {
+            console.log(error.message);
+          });
+      })
+      .catch(error => {
+        console.log(error);
+      });
   };
 
   const handleShowOptionBottomSheet = () => {
@@ -77,9 +118,15 @@ const ProfileScreen = () => {
         });
     }
   };
+
+  const showModelChangeEmail = () => {
+    bottomSheetChangEmailRef.current.expand();
+  };
+
   return (
     <View style={{flex: 1}}>
       <ScrollView
+        showsVerticalScrollIndicator={false}
         style={{
           flex: 1,
           backgroundColor: colors.bg_dark,
@@ -162,6 +209,7 @@ const ProfileScreen = () => {
               }>
               <ButtonOption
                 title={'Change email address'}
+                onPress={showModelChangeEmail}
                 icon={<IconSolid.InboxIcon color={'white'} size={20} />}
               />
               <ButtonOption
@@ -305,24 +353,38 @@ const ProfileScreen = () => {
             numColumns={3}
             renderItem={({item, index}) => {
               return (
-                <FastImage
-                  key={index}
-                  source={{uri: `file://${item}`}}
-                  style={{
-                    maxWidth: dimen.width * 0.3,
-                    aspectRatio: 1,
-                    width: dimen.width * 0.3,
-                    height: dimen.width * 0.3,
-                    margin: dimen.width * 0.01,
-                    borderRadius: 20,
-                  }}
-                />
+                <TouchableOpacity
+                  onPress={() => selectAvatar(`file://${item}`)}>
+                  <FastImage
+                    key={index}
+                    source={{uri: `file://${item}`}}
+                    style={{
+                      maxWidth: dimen.width * 0.3,
+                      aspectRatio: 1,
+                      width: dimen.width * 0.3,
+                      height: dimen.width * 0.3,
+                      margin: dimen.width * 0.01,
+                      borderRadius: 20,
+                    }}
+                  />
+                </TouchableOpacity>
               );
             }}
             keyExtractor={(item, index) => index.toString()}
           />
         </View>
       </BottomSheet>
+      <BottomSheet
+        ref={bottomSheetChangEmailRef}
+        index={-1}
+        snapPoints={snapChangeEmail}
+        enablePanDownToClose
+        enableContentPanning={true}
+        backgroundStyle={{backgroundColor: 'rgba(40,40,40,1)'}}
+        handleIndicatorStyle={{
+          backgroundColor: 'white',
+        }}
+        style={{borderRadius: 50, overflow: 'hidden'}}></BottomSheet>
     </View>
   );
 };

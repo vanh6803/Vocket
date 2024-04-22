@@ -94,7 +94,8 @@ const ChatContainer = () => {
             return (
               <Pressable
                 onPress={() => {
-                  // navigation.navigate('chat')
+                  console.log(item);
+                  navigation.navigate('chat', {friend: item});
                 }}
                 style={{marginHorizontal: dimen.width * 0.01}}>
                 <Avatar

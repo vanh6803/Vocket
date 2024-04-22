@@ -4,28 +4,23 @@ import CricleButton from './CricleButton';
 import FastImage from 'react-native-fast-image';
 import {dimen} from '../constants';
 import * as IconOutline from 'react-native-heroicons/outline';
+import Avatar from './Avatar';
+import {shortenName} from '../utils/ConvertName';
 
-const HeaderChat = ({onBackPress}) => {
+const HeaderChat = ({onBackPress, name, uri}) => {
   return (
-    <View className="flex-row items-center justify-between py-2" style={{}}>
+    <View className="flex-row items-center py-2" style={{}}>
       <CricleButton
         styleButton={{paddingHorizontal: 10}}
         onPress={onBackPress}
         icon={<IconOutline.ChevronLeftIcon color={'white'} size={30} />}
       />
       <View className="flex-row items-center justify-center">
-        <FastImage
-          source={{
-            uri: 'https://kenh14cdn.com/thumb_w/660/203336854389633024/2022/3/28/photo-1-16484498472652092974741.jpg',
-          }}
-          className="rounded-full"
-          style={{width: dimen.width / 11, height: dimen.width / 11}}
-        />
+        <Avatar uri={uri} name={shortenName(name)} borderWidthContainer={0} />
         <View className=" mx-2">
-          <Text className="text-white text-xl font-bold">Name</Text>
+          <Text className="text-white text-lg font-bold">{name}</Text>
         </View>
       </View>
-      <View style={{paddingHorizontal: 10}} />
     </View>
   );
 };

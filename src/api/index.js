@@ -5,6 +5,7 @@ export const API_REGISTER = `${BASE_URL}api/register`;
 export const API_LOGOUT = `${BASE_URL}api/logout`;
 export const API_PROFILE = `${BASE_URL}api/user/detail`;
 export const API_UPDATE_PROFILE = `${BASE_URL}api/updateProfile`;
+export const API_CHANGE_AVATAR = `${BASE_URL}api//user/change-avatar`;
 export const API_CHANGE_PASSWORD = `${BASE_URL}api/changePassword`;
 export const API_CHECK_MAIL_EXITS = `${BASE_URL}api/emailExists`;
 

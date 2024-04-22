@@ -65,7 +65,7 @@ public class ImageProcessingModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void processImage(String imagePath, int rotateDegrees, int borderRadius, Promise promise) {
         RequestOptions requestOptions = new RequestOptions()
-                .transforms(new Rotate(rotateDegrees), new RoundedCorners(borderRadius));
+                .transforms(new Rotate(rotateDegrees));
 
         Glide.with(getReactApplicationContext())
                 .asBitmap()
