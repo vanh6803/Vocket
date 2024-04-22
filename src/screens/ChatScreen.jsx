@@ -21,6 +21,7 @@ import axios from 'axios';
 import {API_MESSAGE} from '../api';
 import Avatar from '../components/Avatar';
 import {shortenName} from '../utils/ConvertName';
+import moment from 'moment';
 
 const ChatScreen = () => {
   const [messages, setMessages] = useState([]);
@@ -33,6 +34,8 @@ const ChatScreen = () => {
   const friend = route.params?.friend;
   const receiverId = friend?._id;
   const senderId = profile?.result._id;
+
+  AvoidSoftInput.setAdjustResize();
 
   useEffect(() => {
     const fetchChatHistory = async () => {
@@ -105,6 +108,7 @@ const ChatScreen = () => {
                 paddingHorizontal: 5,
               }}>
               <Avatar
+                marginHorizontal={5}
                 borderWidthContainer={0}
                 uri={
                   item.sender == senderId
@@ -112,6 +116,7 @@ const ChatScreen = () => {
                     : friend.avatar
                 }
                 name={shortenName(item.receiver.fullName)}
+                styleContainer={styles.avatar}
               />
               <View
                 style={{
@@ -130,6 +135,7 @@ const ChatScreen = () => {
                   }}>
                   {item.message}
                 </Text>
+                {/* <Text>{formatTime(item.createdAt)}</Text> */}
               </View>
             </View>
           );
@@ -139,23 +145,22 @@ const ChatScreen = () => {
       <View
         style={{
           flexDirection: 'row',
-          marginBottom: dimen.height * 0.01,
-          marginTop: dimen.height * 0.01,
           alignItems: 'center',
           backgroundColor: colors.bg_optacity,
           borderWidth: 1,
           borderRadius: 30,
           paddingHorizontal: 8,
-          marginHorizontal: 10,
+          margin: 10,
         }}>
         <TextInput
           placeholder="Enter message"
           placeholderTextColor={'#757575'}
           cursorColor={'#E0E0E0'}
-          style={{color: '#E0E0E0', flex: 1}}
+          style={{color: '#E0E0E0', flex: 1, maxHeight: 100}}
           value={newMessage}
           onChangeText={setNewMessage}
           multiline
+          scrollEnabled={true}
         />
         <CricleButton
           onPress={handleSendMessage}
@@ -170,6 +175,9 @@ const ChatScreen = () => {
 const styles = StyleSheet.create({
   sendBtn: {
     paddingRight: 8,
+  },
+  avatar: {
+    alignSelf: 'flex-end',
   },
 });
 

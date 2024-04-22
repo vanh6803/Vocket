@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -6,60 +6,61 @@ import {
   TextInput,
   ScrollView,
   Pressable,
+  TouchableOpacity,
+  FlatList,
 } from 'react-native';
 import {colors} from '../assets/Colors';
 import * as IconOutline from 'react-native-heroicons/outline';
-import {useNavigation} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import Header from '../components/Header';
-import {FlatList} from 'react-native-gesture-handler';
-import RenderItemChatContainer from '../components/RenderItemChatContainer';
 import {dimen} from '../constants';
 import {useSelector} from 'react-redux';
 import Avatar from '../components/Avatar';
 import {shortenName} from '../utils/ConvertName';
-
-const data = [
-  {
-    id: 1,
-    name: 'vanh',
-    avatar:
-      'https://kenh14cdn.com/thumb_w/660/203336854389633024/2022/3/28/photo-1-16484498472652092974741.jpg',
-    lasterMessage: 'hahha',
-    isView: true,
-  },
-  {
-    id: 2,
-    name: 'vanh',
-    avatar:
-      'https://kenh14cdn.com/thumb_w/660/203336854389633024/2022/3/28/photo-1-16484498472652092974741.jpg',
-    lasterMessage: 'hahha',
-    isView: false,
-  },
-  {
-    id: 3,
-    name: 'vanh',
-    avatar:
-      'https://kenh14cdn.com/thumb_w/660/203336854389633024/2022/3/28/photo-1-16484498472652092974741.jpg',
-    lasterMessage: 'hahha',
-    isView: true,
-  },
-  {
-    id: 4,
-    name: 'vanh',
-    avatar:
-      'https://kenh14cdn.com/thumb_w/660/203336854389633024/2022/3/28/photo-1-16484498472652092974741.jpg',
-    lasterMessage: 'hahha',
-    isView: false,
-  },
-];
+import axios from 'axios';
+import {API_MESSAGE} from '../api';
+import {TextStyle} from '../styles/TextStyle';
+import moment from 'moment';
 
 const ChatContainer = () => {
   const currentFriends = useSelector(state => state.currentFriends.data);
+  const profile = useSelector(state => state.profileReducer.data);
+  const [data, setData] = useState();
 
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    const fetchFriendMessages = async () => {
+      try {
+        const response = await axios.get(`${API_MESSAGE}/friends-messages`, {
+          headers: {Authorization: `Bearer ${profile.result.token}`},
+        });
+        setData(response.data);
+      } catch (error) {
+        console.error('Error fetching friend messages:', error);
+      }
+    };
+
+    fetchFriendMessages();
+  }, [isFocused]);
+
+  const formatTime = createdAt => {
+    const now = moment();
+    const messageTime = moment(createdAt);
+    const diffYears = now.diff(messageTime, 'years');
+    if (diffYears > 1) {
+      return messageTime.format('DD/MM/YYYY HH:mm');
+    }
+    const diffDays = now.diff(messageTime, 'days');
+    if (diffDays > 1) {
+      return messageTime.format('DD/MM HH:mm');
+    }
+    return messageTime.format('HH:mm');
+  };
 
   return (
-    <View className="flex-1" style={{backgroundColor: colors.bg_dark}}>
+    <View className="flex-1" style={{flex: 1, backgroundColor: colors.bg_dark}}>
       <Header
         styleContainer={{marginHorizontal: dimen.width * 0.02}}
         iconLeft={<IconOutline.ChevronLeftIcon size={30} color={'white'} />}
@@ -85,7 +86,7 @@ const ChatContainer = () => {
           cursorColor={'white'}
         />
       </View>
-      <View style={{marginTop: dimen.height * 0.01}}>
+      <View style={{margin: 10, marginVertical: 20}}>
         <FlatList
           data={currentFriends?.results}
           showsHorizontalScrollIndicator={false}
@@ -103,25 +104,59 @@ const ChatContainer = () => {
                   name={shortenName(item?.fullName)}
                   borderColor={'rgb(63,63,70)'}
                   borderWidthContainer={2.5}
-                  size={dimen.width * 0.12}
+                  size={dimen.width * 0.15}
                 />
               </Pressable>
             );
           }}
         />
       </View>
+      <Text
+        style={[
+          TextStyle.large,
+          {marginHorizontal: 20, marginBottom: 20, fontSize: 20},
+        ]}>
+        Messsages
+      </Text>
       <FlatList
+        style={{marginHorizontal: 10}}
         data={data}
-        renderItem={({item}) => {
+        renderItem={({item, index}) => {
           return (
-            <RenderItemChatContainer
-              item={item}
-              onPress={() => {
-                navigation.navigate('chat');
+            <TouchableOpacity
+              key={index}
+              style={{
+                flexDirection: 'row',
+                marginBottom: 10,
+                alignItems: 'center',
               }}
-            />
+              onPress={() => {
+                navigation.navigate('chat', {friend: item.friendDetails});
+              }}>
+              <Avatar
+                marginHorizontal={5}
+                borderWidthContainer={0}
+                size={dimen.width * 0.13}
+                uri={item.friendDetails.avatar}
+                name={shortenName(item.friendDetails.fullName)}
+              />
+              <View>
+                <Text style={[TextStyle.base]}>
+                  {item.friendDetails.fullName} -{' '}
+                  {formatTime(item.latestMessageTime)}
+                </Text>
+                <Text
+                  style={[TextStyle.base]}
+                  numberOfLines={1}
+                  ellipsizeMode="tail">
+                  {item.senderName == 'You' ? 'You: ' : ''}{' '}
+                  {item.latestMessageText}
+                </Text>
+              </View>
+            </TouchableOpacity>
           );
         }}
+        keyExtractor={(item, index) => index.toString()}
       />
     </View>
   );

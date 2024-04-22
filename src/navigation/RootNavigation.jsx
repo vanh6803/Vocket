@@ -116,7 +116,6 @@ export default function RootNavigation() {
                   close: TransitionSpecs.TransitionIOSSpec,
                 },
                 cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-                gestureResponseDistance: 115,
               }}
             />
           </>
