@@ -20,7 +20,13 @@ export default function RenderCamera({
   flash,
   toggleFlash,
 }) {
-  const device = useCameraDevice(isFront ? 'front' : 'back');
+  const device = useCameraDevice(isFront ? 'front' : 'back', {
+    physicalDevices: [
+      'telephoto-camera',
+      'ultra-wide-angle-camera',
+      'wide-angle-camera',
+    ],
+  });
   const isFocuse = useIsFocused();
   const appState = useAppState();
   const isActive = isFocuse && appState === 'active';
@@ -36,16 +42,19 @@ export default function RenderCamera({
           overflow: 'hidden',
           borderRadius: 50,
         }}>
-        <Camera
-          ref={cameraRef}
-          device={device}
-          isActive={isActive}
-          style={StyleSheet.absoluteFill}
-          resizeMode="cover"
-          photo={true}
-          orientation="portrait"
-          format={format}
-        />
+        {isActive ? (
+          <Camera
+            ref={cameraRef}
+            device={device}
+            isActive={isActive}
+            style={StyleSheet.absoluteFill}
+            resizeMode="cover"
+            photo={true}
+            orientation="portrait"
+            format={format}
+            androidPreviewViewType="surface-view"
+          />
+        ) : null}
       </View>
       <View style={{height: dimen.height * 0.03}} />
       <View className="flex flex-row justify-around items-center">

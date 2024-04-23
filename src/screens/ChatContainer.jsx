@@ -59,8 +59,39 @@ const ChatContainer = () => {
     return messageTime.format('HH:mm');
   };
 
+  if (!data) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: colors.bg_dark,
+        }}>
+        <Header
+          styleContainer={{marginHorizontal: dimen.width * 0.02}}
+          iconLeft={<IconOutline.ChevronLeftIcon size={30} color={'white'} />}
+          onClickLeft={() => {
+            navigation.goBack();
+          }}
+          boxChildren={
+            <Text className="text-white font-bold text-xl">Message</Text>
+          }
+        />
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <Text style={[TextStyle.title, {marginHorizontal: 10}]}>
+            Make friends with people to text
+          </Text>
+        </View>
+      </View>
+    );
+  }
+
   return (
-    <View className="flex-1" style={{flex: 1, backgroundColor: colors.bg_dark}}>
+    <View style={{flex: 1, backgroundColor: colors.bg_dark}}>
       <Header
         styleContainer={{marginHorizontal: dimen.width * 0.02}}
         iconLeft={<IconOutline.ChevronLeftIcon size={30} color={'white'} />}

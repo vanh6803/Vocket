@@ -4,9 +4,10 @@ import {
   FETCH_POST_FAIL,
 } from '../KeyConstant';
 
-export const fetchPostRequest = () => {
+export const fetchPostRequest = token => {
   return {
     type: FETCH_POST_REQUEST,
+    payload: {token},
   };
 };
 

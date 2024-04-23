@@ -22,7 +22,7 @@ export default function Main() {
   const token = useSelector(state => state.authReducer.userToken);
 
   useEffect(() => {
-    dispatch(fetchPostRequest());
+    dispatch(fetchPostRequest(token));
   }, [dispatch]);
 
   useEffect(() => {

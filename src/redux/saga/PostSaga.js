@@ -4,9 +4,14 @@ import {fetchPostFail, fetchPostSuccess} from '../action/Post';
 import {BASE_URL} from '../../constants';
 import {FETCH_POST_REQUEST} from '../KeyConstant';
 
-function* fetchPosts() {
+function* fetchPosts(action) {
   try {
-    const response = yield call(() => axios.get(`${BASE_URL}api/posts`));
+    const token = action.payload.token;
+    const response = yield call(() =>
+      axios.get(`${BASE_URL}api/posts`, {
+        headers: {Authorization: `Bearer ${token}`},
+      }),
+    );
     yield put(fetchPostSuccess(response.data));
   } catch (error) {
     if (error.response) {

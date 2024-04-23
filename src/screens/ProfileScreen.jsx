@@ -29,14 +29,12 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import {colors} from '../assets/Colors';
 import BottomSheet, {
   BottomSheetFlatList,
-  useBottomSheet,
 } from '@gorhom/bottom-sheet';
 import {globals, modalStyle} from '../styles/Global';
 import {TextStyle} from '../styles/TextStyle';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import {API_CHANGE_AVATAR} from '../api';
 import {fetchProfileRequest} from './../redux/action/Profile';
-import InputCustom from '../components/InputCustom';
 const ImageGalleryModule = NativeModules.MyImagesNativeModule;
 
 const ProfileScreen = () => {
